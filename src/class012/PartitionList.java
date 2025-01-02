@@ -21,7 +21,7 @@ public class PartitionList {
 		}
 	}
 
-	class Solution {
+	static class Solution {
 
 		public static ListNode partition(ListNode head, int x) {
 			ListNode leftHead = null, leftTail = null; // < x的区域

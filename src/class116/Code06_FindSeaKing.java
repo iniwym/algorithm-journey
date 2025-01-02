@@ -13,7 +13,7 @@ public class Code06_FindSeaKing {
 	// 本实现只使用固定数组结构
 	// 其他语言的同学很容易改写
 	// 时间复杂度也保证了是最优
-	class MajorityChecker {
+	static class MajorityChecker {
 
 		public static int MAXN = 20001;
 

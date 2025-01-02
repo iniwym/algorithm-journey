@@ -17,7 +17,7 @@ public class Code02_CountIntervals {
 	// 选择用静态空间的方式实现
 	// 该方法的打败比例不高但是非常好想
 	// 有兴趣的同学可以研究其他做法
-	class CountIntervals {
+	static class CountIntervals {
 
 		// 支持的最大范围
 		public static int n = 1000000000;

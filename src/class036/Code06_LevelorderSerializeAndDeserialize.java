@@ -17,7 +17,7 @@ public class Code06_LevelorderSerializeAndDeserialize {
 
 	// 提交这个类
 	// 按层序列化
-	public class Codec {
+	public static class Codec {
 
 		public static int MAXN = 10001;
 

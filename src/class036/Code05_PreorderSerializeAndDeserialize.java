@@ -28,7 +28,7 @@ public class Code05_PreorderSerializeAndDeserialize {
     //           2
     // 补足空位置的中序遍历结果都是{ null, 1, null, 2, null}
 	// 提交这个类
-	public class Codec {
+	public static class Codec {
 
 		public String serialize(TreeNode root) {
 			StringBuilder builder = new StringBuilder();

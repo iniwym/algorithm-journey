@@ -9,7 +9,7 @@ package class006;
 public class Code04_FindPeakElement {
 
 	// 测试链接 : https://leetcode.cn/problems/find-peak-element/
-	class Solution {
+	static class Solution {
 
 		public static int findPeakElement(int[] arr) {
 			int n = arr.length;
