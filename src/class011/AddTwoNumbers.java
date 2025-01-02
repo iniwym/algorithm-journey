@@ -22,7 +22,7 @@ public class AddTwoNumbers {
 		}
 	}
 
-	class Solution {
+	static class Solution {
 
 		// 也可以复用老链表
 		// 不过这个实现没有这么做，都是生成的新节点(为了教学好懂)

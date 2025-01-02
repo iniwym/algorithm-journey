@@ -74,7 +74,7 @@ public class ListReverse {
 	}
 
 	// 反转单链表测试链接 : https://leetcode.cn/problems/reverse-linked-list/
-	class Solution {
+	static class Solution {
 
 		public static ListNode reverseList(ListNode head) {
 			ListNode pre = null;

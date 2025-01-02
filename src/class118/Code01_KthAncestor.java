@@ -12,7 +12,7 @@ import java.util.Arrays;
 // 测试链接 : https://leetcode.cn/problems/kth-ancestor-of-a-tree-node/
 public class Code01_KthAncestor {
 
-	class TreeAncestor {
+	static class TreeAncestor {
 
 		public static int MAXN = 50001;
 

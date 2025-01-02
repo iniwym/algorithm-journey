@@ -20,7 +20,7 @@ public class MergeTwoLists {
 		}
 	}
 
-	class Solution {
+	static class Solution {
 
 		public static ListNode mergeTwoLists(ListNode head1, ListNode head2) {
 			if (head1 == null || head2 == null) {

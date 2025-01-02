@@ -7,7 +7,7 @@ package class001;
 // 语言问题并不是学习算法的障碍，有了人工智能工具之后，就更不是障碍了
 public class LanguageConversion {
 
-	class Solution {
+	static class Solution {
 
 		public static int[] sortArray(int[] nums) {
 			if (nums.length > 1) {
