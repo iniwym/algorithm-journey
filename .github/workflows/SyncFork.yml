@@ -1,0 +1,49 @@
+name: SyncFork
+
+on:
+  schedule:
+    - cron: "0 2 * * 2" # 北京时间周二上午10:00
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  sync-and-rebase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # 确保获取所有历史记录
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Add upstream remote
+        run: git remote add upstream https://github.com/algorithmzuo/algorithm-journey.git
+
+      - name: Fetch upstream changes
+        run: git fetch upstream
+
+      - name: Rebase main on upstream/main
+        run: git rebase upstream/main
+
+      - name: Push to origin/main
+        run: |
+          git push origin HEAD --force-with-lease
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout ini branch
+        run: |
+          git checkout ini || git checkout -b ini
+          git pull origin ini
+
+      - name: Rebase ini on main
+        run: git rebase main
+
+      - name: Push to origin/ini
+        run: |
+          git push origin ini --force-with-lease
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
