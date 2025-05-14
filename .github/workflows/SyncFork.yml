@@ -33,17 +33,3 @@ jobs:
           git push origin HEAD --force-with-lease
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Checkout ini branch
-        run: |
-          git checkout ini || git checkout -b ini
-          git pull origin ini
-
-      - name: Rebase ini on main
-        run: git rebase main
-
-      - name: Push to origin/ini
-        run: |
-          git push origin ini --force-with-lease
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
