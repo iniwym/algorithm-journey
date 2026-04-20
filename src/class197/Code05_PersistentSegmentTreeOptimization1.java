@@ -17,7 +17,7 @@ package class197;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
-public class Code06_PersistentSegmentTreeOptimization1 {
+public class Code05_PersistentSegmentTreeOptimization1 {
 
 	public static int MAXN = 1001;
 	public static int MAXT = 10001;
