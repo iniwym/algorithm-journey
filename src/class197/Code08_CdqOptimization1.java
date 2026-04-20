@@ -260,7 +260,7 @@ public class Code08_CdqOptimization1 {
 		System.out.println("=============");
 		n = 100;
 		m = 1000;
-		int valMax = 10000;
+		int valMax = 10;
 		int weightMax = 10000;
 		int round = 20;
 		for (int t = 1; t <= round; t++) {
