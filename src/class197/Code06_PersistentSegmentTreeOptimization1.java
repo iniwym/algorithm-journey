@@ -321,6 +321,8 @@ public class Code06_PersistentSegmentTreeOptimization1 {
 	}
 
 	public static void main(String[] args) {
+		System.out.println("主席树优化建图");
+		System.out.println("============");
 		n = 100;
 		int valMax = 1000;
 		int weightMax = 10000;
