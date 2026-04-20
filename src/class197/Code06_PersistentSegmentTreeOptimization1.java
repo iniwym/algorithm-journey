@@ -171,7 +171,7 @@ public class Code06_PersistentSegmentTreeOptimization1 {
 		addEdge(x, y, w);
 	}
 
-	public static void prepare() {
+	public static void buildGraph() {
 		for (int i = 1; i <= n; i++) {
 			sortv[i] = arr[i];
 			valIdx[i][0] = arr[i];
@@ -333,7 +333,7 @@ public class Code06_PersistentSegmentTreeOptimization1 {
 			for (int i = 1; i <= n; i++) {
 				arr[i] = random(valMax);
 			}
-			prepare();
+			buildGraph();
 			int opCnt = 200;
 			for (int i = 1; i <= opCnt; i++) {
 				int op = random(3);

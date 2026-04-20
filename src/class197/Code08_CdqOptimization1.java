@@ -120,7 +120,7 @@ public class Code08_CdqOptimization1 {
 		merge(l, mid, r);
 	}
 
-	public static void prepare() {
+	public static void buildGraph() {
 		for (int i = 1; i <= n; i++) {
 			iabc[i][0] = i;
 			iabc[i][1] = a[i];
@@ -277,7 +277,7 @@ public class Code08_CdqOptimization1 {
 				addOp(x, x, w);
 				link(x, w);
 			}
-			prepare();
+			buildGraph();
 			for (int x = 1; x <= n; x++) {
 				for (int y = 1; y <= n; y++) {
 					int ans1 = dijkstra(x, y);
