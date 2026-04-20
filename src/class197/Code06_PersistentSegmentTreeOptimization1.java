@@ -17,7 +17,7 @@ package class197;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
-public class Code05_PersistentSegmentTreeOptimization1 {
+public class Code06_PersistentSegmentTreeOptimization1 {
 
 	public static int MAXN = 1001;
 	public static int MAXT = 10001;
@@ -325,9 +325,9 @@ public class Code05_PersistentSegmentTreeOptimization1 {
 		int valMax = 1000;
 		int weightMax = 10000;
 		int round = 20;
-		for (int c = 1; c <= round; c++) {
-			System.out.println("第" + c + "轮");
-			System.out.print("测试开始...");
+		for (int t = 1; t <= round; t++) {
+			System.out.println("第" + t + "轮");
+			System.out.println("测试开始");
 			for (int i = 1; i <= n; i++) {
 				arr[i] = random(valMax);
 			}
@@ -369,7 +369,7 @@ public class Code05_PersistentSegmentTreeOptimization1 {
 			}
 			clear();
 			System.out.println("测试结束");
-			System.out.println("=================");
+			System.out.println("=======");
 		}
 	}
 
