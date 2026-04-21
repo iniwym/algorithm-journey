@@ -1,6 +1,6 @@
 package class197;
 
-// 二进制码，java版
+// 二进制编码，java版
 // 测试链接 : https://www.luogu.com.cn/problem/P6965
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
