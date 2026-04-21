@@ -303,7 +303,7 @@ public class Code01_Game1 {
 				c = readByte();
 				if (c == -1)
 					return 0;
-			} while (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')));
+			} while (!(c > ' ' && c != -1));
 			return (char) c;
 		}
 	}
