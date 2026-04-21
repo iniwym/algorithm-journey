@@ -40,22 +40,24 @@ public class Code01_Game1 {
 	public static char[] ans = new char[MAXN];
 
 	// 迭代版需要的栈，讲解118讲了递归改迭代的技巧
-	public static int[][] stack = new int[MAXN][3];
+	public static int[] stau = new int[MAXN];
+	public static int[] stas = new int[MAXN];
+	public static int[] stae = new int[MAXN];
 	public static int u, status, e;
 	public static int stacksize;
 
 	public static void push(int u, int status, int e) {
-		stack[stacksize][0] = u;
-		stack[stacksize][1] = status;
-		stack[stacksize][2] = e;
+		stau[stacksize] = u;
+		stas[stacksize] = status;
+		stae[stacksize] = e;
 		stacksize++;
 	}
 
 	public static void pop() {
 		stacksize--;
-		u = stack[stacksize][0];
-		status = stack[stacksize][1];
-		e = stack[stacksize][2];
+		u = stau[stacksize];
+		status = stas[stacksize];
+		e = stae[stacksize];
 	}
 
 	public static void addEdge(int u, int v) {
@@ -133,33 +135,32 @@ public class Code01_Game1 {
 
 	public static int pick(int i, int car) {
 		int first = ground[i] == 1 ? 2 : 1;
-		return car == first ? i : (i + n);
+		return car == first ? i : i + n;
 	}
 
-	public static int notPick(int i, int car) {
-		int first = ground[i] == 1 ? 2 : 1;
-		return car == first ? (i + n) : i;
+	public static int other(int i) {
+		return i <= n ? i + n : i - n;
 	}
 
 	public static void buildGraph(int xstatus) {
 		for (int bit = 0, idx = 1; bit < d; bit++, idx++) {
-			if (((xstatus >> bit) & 1) == 1) {
+			if ((xstatus >> bit & 1) == 1) {
 				ground[posx[idx]] = 1;
 			} else {
 				ground[posx[idx]] = 2;
 			}
 		}
 		for (int i = 1; i <= m; i++) {
-			int p1 = pos1[i];
-			int c1 = car1[i];
-			int p2 = pos2[i];
-			int c2 = car2[i];
-			if (ground[p1] != c1) {
-				if (ground[p2] != c2) {
-					addEdge(pick(p1, c1), pick(p2, c2));
-					addEdge(notPick(p2, c2), notPick(p1, c1));
+			if (ground[pos1[i]] != car1[i]) {
+				int y1 = pick(pos1[i], car1[i]);
+				int n1 = other(y1);
+				if (ground[pos2[i]] != car2[i]) {
+					int y2 = pick(pos2[i], car2[i]);
+					int n2 = other(y2);
+					addEdge(y1, y2);
+					addEdge(n2, n1);
 				} else {
-					addEdge(pick(p1, c1), notPick(p1, c1));
+					addEdge(y1, n1);
 				}
 			}
 		}
@@ -177,7 +178,7 @@ public class Code01_Game1 {
 
 	public static void clear() {
 		for (int i = 1; i <= n << 1; i++) {
-			head[i] = dfn[i] = low[i] = belong[i] = 0;
+			head[i] = dfn[i] = belong[i] = 0;
 		}
 		cntg = cntd = top = sccCnt = 0;
 	}
