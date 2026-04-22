@@ -183,7 +183,6 @@ public class Code04_BinaryCode1 {
 	public static void insert(int i, int confirm, int x) {
 		String str = arr[i];
 		int pi = pending[i];
-		int y = other(x);
 		int cur = 1;
 		for (int si = 0, path; si < str.length(); si++) {
 			if (pi == si) {
@@ -202,8 +201,8 @@ public class Code04_BinaryCode1 {
 			cur = tree[cur][path];
 		}
 		addEdgeG(x, up[fa[cur]]);
-		addEdgeG(up[cur], y);
-		addEdgeG(down[fa[cur]], y);
+		addEdgeG(up[cur], other(x));
+		addEdgeG(down[fa[cur]], other(x));
 		addEdgeG(x, down[cur]);
 		addEdgeS(cur, x);
 	}
