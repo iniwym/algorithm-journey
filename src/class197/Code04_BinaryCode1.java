@@ -10,7 +10,7 @@ package class197;
 // 测试链接 : https://www.luogu.com.cn/problem/P6965
 // 测试链接 : https://hydro.ac/p/bzoj-P4840
 // 测试链接 : https://loj.ac/p/6036
-// 最后的测试链接，只打印"YES"或者"NO"，不用打印方案
+// 第三个测试链接，只打印"YES"或"NO"，不打印每个确定后的字符串
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
 import java.io.IOException;
