@@ -33,10 +33,10 @@ public class Code04_BinaryCode1 {
 	public static int[] tog = new int[MAXE];
 	public static int cntg;
 
-	public static int[] heads = new int[MAXP];
-	public static int[] nexts = new int[MAXP];
-	public static int[] tos = new int[MAXP];
-	public static int cnts;
+	public static int[] headx = new int[MAXP];
+	public static int[] nextx = new int[MAXP];
+	public static int[] tox = new int[MAXP];
+	public static int cntx;
 
 	public static int[] group = new int[MAXN];
 	public static int gsiz;
@@ -78,16 +78,16 @@ public class Code04_BinaryCode1 {
 		e = stae[stacksize];
 	}
 
-	public static void addEdgeG(int u, int v) {
+	public static void addEdge(int u, int v) {
 		nextg[++cntg] = headg[u];
 		tog[cntg] = v;
 		headg[u] = cntg;
 	}
 
-	public static void addEdgeS(int u, int v) {
-		nexts[++cnts] = heads[u];
-		tos[cnts] = v;
-		heads[u] = cnts;
+	public static void addx(int u, int x) {
+		nextx[++cntx] = headx[u];
+		tox[cntx] = x;
+		headx[u] = cntx;
 	}
 
 	// 递归版
@@ -172,9 +172,9 @@ public class Code04_BinaryCode1 {
 		}
 		if (pending[i] == -1) {
 			if (str.charAt(0) == '0') {
-				addEdgeG(i + n, i);
+				addEdge(i + n, i);
 			} else {
-				addEdgeG(i, i + n);
+				addEdge(i, i + n);
 			}
 			pending[i] = 0;
 		}
@@ -195,34 +195,36 @@ public class Code04_BinaryCode1 {
 				fa[cntp] = cur;
 				up[cntp] = ++cntt;
 				down[cntp] = ++cntt;
-				addEdgeG(up[cntp], up[cur]);
-				addEdgeG(down[cur], down[cntp]);
+				addEdge(up[cntp], up[cur]);
+				addEdge(down[cur], down[cntp]);
 			}
 			cur = tree[cur][path];
 		}
-		addEdgeG(x, up[fa[cur]]);
-		addEdgeG(up[cur], other(x));
-		addEdgeG(down[fa[cur]], other(x));
-		addEdgeG(x, down[cur]);
-		addEdgeS(cur, x);
+		addEdge(x, up[fa[cur]]);
+		addEdge(up[cur], other(x));
+		addEdge(down[fa[cur]], other(x));
+		addEdge(x, down[cur]);
+		addx(cur, x);
 	}
 
 	public static void groupLink() {
-		cntt++;
-		addEdgeG(cntt, other(group[1]));
-		for (int i = 2; i <= gsiz; i++) {
+		if (gsiz > 1) {
 			cntt++;
-			addEdgeG(cntt, other(group[i]));
-			addEdgeG(group[i], cntt - 1);
-			addEdgeG(cntt, cntt - 1);
-		}
-		cntt++;
-		addEdgeG(cntt, other(group[gsiz]));
-		for (int i = gsiz - 1; i >= 1; i--) {
+			addEdge(cntt, other(group[1]));
+			for (int i = 2; i <= gsiz; i++) {
+				cntt++;
+				addEdge(cntt, other(group[i]));
+				addEdge(group[i], cntt - 1);
+				addEdge(cntt, cntt - 1);
+			}
 			cntt++;
-			addEdgeG(cntt, other(group[i]));
-			addEdgeG(group[i], cntt - 1);
-			addEdgeG(cntt, cntt - 1);
+			addEdge(cntt, other(group[gsiz]));
+			for (int i = gsiz - 1; i >= 1; i--) {
+				cntt++;
+				addEdge(cntt, other(group[i]));
+				addEdge(group[i], cntt - 1);
+				addEdge(cntt, cntt - 1);
+			}
 		}
 	}
 
@@ -237,13 +239,11 @@ public class Code04_BinaryCode1 {
 			insert(i, 1, i + n);
 		}
 		for (int u = 1; u <= cntp; u++) {
-			if (heads[u] != 0) {
-				gsiz = 0;
-				for (int e = heads[u]; e > 0; e = nexts[e]) {
-					group[++gsiz] = tos[e];
-				}
-				groupLink();
+			gsiz = 0;
+			for (int e = headx[u]; e > 0; e = nextx[e]) {
+				group[++gsiz] = tox[e];
 			}
+			groupLink();
 		}
 	}
 
@@ -274,11 +274,7 @@ public class Code04_BinaryCode1 {
 				String str = arr[i];
 				for (int j = 0; j < str.length(); j++) {
 					if (pending[i] == j) {
-						if (belong[i] < belong[i + n]) {
-							out.print(0);
-						} else {
-							out.print(1);
-						}
+						out.print(belong[i] < belong[i + n] ? '0' : '1');
 					} else {
 						out.print(str.charAt(j));
 					}
