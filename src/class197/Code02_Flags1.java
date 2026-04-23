@@ -1,6 +1,12 @@
 package class197;
 
 // 旗帜，java版
+// 一共n个旗子，第i号旗子有a[i]和b[i]两个可选位置
+// 你需要决定每个旗子，到底放在两个候选位置中的哪一个
+// 两面旗子之间的最小距离 d 越大，旗子的排列看起来就越美观
+// 找到最美观的情况，也就是求出所有可能的 d 值中的最大值
+// 2 <= n <= 10^4
+// 1 <= a[i]、b[i] <= 10^9
 // 测试链接 : https://www.luogu.com.cn/problem/AT_arc069_d
 // 测试链接 : https://atcoder.jp/contests/arc069/tasks/arc069_d
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
