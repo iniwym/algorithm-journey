@@ -25,7 +25,7 @@ public class Code04_BinaryCode1 {
 	public static int MAXT = 5000001;
 	public static int MAXE = 10000001;
 	public static int n, cntt;
-	public static String[] arr = new String[MAXN];
+	public static String[] arrs = new String[MAXN];
 	public static int[] pending = new int[MAXN];
 
 	public static int[] headg = new int[MAXT];
@@ -38,14 +38,14 @@ public class Code04_BinaryCode1 {
 	public static int[] tox = new int[MAXP];
 	public static int cntx;
 
-	public static int[] group = new int[MAXN];
-	public static int gsiz;
-
 	public static int[][] tree = new int[MAXP][2];
 	public static int[] fa = new int[MAXP];
 	public static int[] up = new int[MAXP];
 	public static int[] down = new int[MAXP];
 	public static int cntp;
+
+	public static int[] group = new int[MAXN];
+	public static int gsiz;
 
 	public static int[] dfn = new int[MAXT];
 	public static int[] low = new int[MAXT];
@@ -162,7 +162,7 @@ public class Code04_BinaryCode1 {
 	}
 
 	public static void findPending(int i) {
-		String str = arr[i];
+		String str = arrs[i];
 		pending[i] = -1;
 		for (int si = 0; si < str.length(); si++) {
 			if (str.charAt(si) == '?') {
@@ -181,7 +181,7 @@ public class Code04_BinaryCode1 {
 	}
 
 	public static void insert(int i, int confirm, int x) {
-		String str = arr[i];
+		String str = arrs[i];
 		int pi = pending[i];
 		int cur = 1;
 		for (int si = 0, path; si < str.length(); si++) {
@@ -252,7 +252,7 @@ public class Code04_BinaryCode1 {
 		PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out));
 		n = in.nextInt();
 		for (int i = 1; i <= n; i++) {
-			arr[i] = in.nextString();
+			arrs[i] = in.nextString();
 		}
 		buildGraph();
 		for (int i = 1; i <= n << 1; i++) {
@@ -271,7 +271,7 @@ public class Code04_BinaryCode1 {
 		if (check) {
 			out.println("YES");
 			for (int i = 1; i <= n; i++) {
-				String str = arr[i];
+				String str = arrs[i];
 				for (int j = 0; j < str.length(); j++) {
 					if (pending[i] == j) {
 						out.print(belong[i] < belong[i + n] ? '0' : '1');
