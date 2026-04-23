@@ -26,7 +26,7 @@ public class Code02_Flags1 {
 	public static int[] a = new int[MAXN];
 	public static int[] b = new int[MAXN];
 
-	// 位置x、决定编号i
+	// 所在的位置pos、决定的编号id
 	public static int[][] arr = new int[MAXN << 1][2];
 
 	public static int[] ls = new int[MAXT];
@@ -49,11 +49,11 @@ public class Code02_Flags1 {
 	public static int[] belong = new int[MAXT];
 	public static int sccCnt;
 
-	public static int kth(int x) {
+	public static int kth(int num) {
 		int l = 1, r = k, mid, ans = k + 1;
 		while (l <= r) {
 			mid = (l + r) >> 1;
-			if (arr[mid][0] >= x) {
+			if (arr[mid][0] >= num) {
 				ans = mid;
 				r = mid - 1;
 			} else {
@@ -93,9 +93,16 @@ public class Code02_Flags1 {
 		}
 	}
 
+	public static int other(int i) {
+		return i <= n ? i + n : i - n;
+	}
+
 	public static int build(int l, int r) {
-		int rt = ++cntt;
-		if (l < r) {
+		int rt;
+		if (l == r) {
+			rt = other(arr[l][1]);
+		} else {
+			rt = ++cntt;
 			int mid = (l + r) >> 1;
 			ls[rt] = build(l, mid);
 			rs[rt] = build(mid + 1, r);
@@ -105,24 +112,7 @@ public class Code02_Flags1 {
 		return rt;
 	}
 
-	public static int other(int i) {
-		return i <= n ? i + n : i - n;
-	}
-
-	public static void addOther(int xid, int jobi, int l, int r, int i) {
-		if (l == r) {
-			addEdge(i, other(xid));
-		} else {
-			int mid = (l + r) >> 1;
-			if (jobi <= mid) {
-				addOther(xid, jobi, l, mid, ls[i]);
-			} else {
-				addOther(xid, jobi, mid + 1, r, rs[i]);
-			}
-		}
-	}
-
-	public static void link(int xid, int jobl, int jobr, int l, int r, int i) {
+	public static void xToRange(int xid, int jobl, int jobr, int l, int r, int i) {
 		if (jobl > jobr) {
 			return;
 		}
@@ -131,10 +121,10 @@ public class Code02_Flags1 {
 		} else {
 			int mid = (l + r) >> 1;
 			if (jobl <= mid) {
-				link(xid, jobl, jobr, l, mid, ls[i]);
+				xToRange(xid, jobl, jobr, l, mid, ls[i]);
 			}
 			if (jobr > mid) {
-				link(xid, jobl, jobr, mid + 1, r, rs[i]);
+				xToRange(xid, jobl, jobr, mid + 1, r, rs[i]);
 			}
 		}
 	}
@@ -143,15 +133,12 @@ public class Code02_Flags1 {
 		cntt = k;
 		root = build(1, k);
 		for (int i = 1; i <= k; i++) {
-			addOther(arr[i][1], i, 1, k, root);
-		}
-		for (int i = 1; i <= k; i++) {
-			int x = arr[i][0];
-			int l = kth(x - d + 1);
-			int r = kth(x + d) - 1;
-			int id = arr[i][1];
-			link(id, l, i - 1, 1, k, root);
-			link(id, i + 1, r, 1, k, root);
+			int pos = arr[i][0];
+			int l = kth(pos - d + 1);
+			int r = kth(pos + d) - 1;
+			int x = arr[i][1];
+			xToRange(x, l, i - 1, 1, k, root);
+			xToRange(x, i + 1, r, 1, k, root);
 		}
 	}
 
