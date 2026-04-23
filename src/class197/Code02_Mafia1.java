@@ -111,6 +111,7 @@ public class Code02_Mafia1 {
 	}
 
 	public static void buildGraph(int limit) {
+		cntt = m << 1;
 		for (int i = 1; i <= m; i++) {
 			if (destroyTime[i] > limit) {
 				addEdge(i, i + m);
@@ -145,11 +146,10 @@ public class Code02_Mafia1 {
 		for (int i = 1; i <= cntt; i++) {
 			head[i] = dfn[i] = belong[i] = 0;
 		}
-		cntg = cntd = top = sccCnt = 0;
+		cntt = cntg = cntd = top = sccCnt = 0;
 	}
 
 	public static boolean getAns(int limit) {
-		cntt = m << 1;
 		buildGraph(limit);
 		for (int i = 1; i <= m << 1; i++) {
 			if (dfn[i] == 0) {
