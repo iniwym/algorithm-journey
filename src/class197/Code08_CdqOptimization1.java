@@ -62,25 +62,25 @@ public class Code08_CdqOptimization1 {
 		return i & -i;
 	}
 
-	public static void add(int val, int node) {
-		while (val <= maxc) {
-			int pre = tree[val];
+	public static void add(int i, int x) {
+		while (i <= maxc) {
+			int pre = tree[i];
 			int cur = ++cntt;
 			if (pre != 0) {
 				addEdge(pre, cur, 0);
 			}
-			addEdge(node, cur, 0);
-			tree[val] = cur;
-			val += lowbit(val);
+			addEdge(x, cur, 0);
+			tree[i] = cur;
+			i += lowbit(i);
 		}
 	}
 
-	public static void connect(int val, int u, int w) {
-		while (val > 0) {
-			if (tree[val] > 0) {
-				addEdge(tree[val], u, w);
+	public static void rangeToX(int i, int x, int w) {
+		while (i > 0) {
+			if (tree[i] > 0) {
+				addEdge(tree[i], x, w);
 			}
-			val -= lowbit(val);
+			i -= lowbit(i);
 		}
 	}
 
@@ -99,9 +99,9 @@ public class Code08_CdqOptimization1 {
 				add(iabc[p1][3], iabc[p1][0]);
 			}
 			for (int e = headp[iabc[p2][0]]; e > 0; e = nextp[e]) {
-				int u = top[e];
+				int x = top[e];
 				int w = weightp[e];
-				connect(iabc[p2][3], u, w);
+				rangeToX(iabc[p2][3], x, w);
 			}
 		}
 		for (int i = l; i <= p1; i++) {
