@@ -11,7 +11,7 @@ package class197;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
-public class Code07_CdqOptimization1 {
+public class Code08_CdqOptimization1 {
 
 	public static int MAXN = 101;
 	public static int MAXM = 1001;
