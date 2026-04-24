@@ -39,11 +39,11 @@ public class Code04_PartitionRepeatableSet1 {
 	public static int[] belong = new int[MAXT];
 	public static int sccCnt;
 
-	public static int[] in1 = new int[MAXN];
-	public static int[] out1 = new int[MAXN];
+	public static int[] inTree1 = new int[MAXN];
+	public static int[] outTree1 = new int[MAXN];
 
-	public static int[] in2 = new int[MAXN];
-	public static int[] out2 = new int[MAXN];
+	public static int[] inTree2 = new int[MAXN];
+	public static int[] outTree2 = new int[MAXN];
 
 	// 迭代版需要的栈，讲解118讲了递归改迭代的技巧
 	public static int[] stau = new int[MAXT];
@@ -177,10 +177,10 @@ public class Code04_PartitionRepeatableSet1 {
 		return i & -i;
 	}
 
-	public static void add(int[] in, int[] out, int i, int x) {
+	public static void add(int[] inTree, int[] outTree, int i, int x) {
 		while (i <= n) {
-			int prei = in[i];
-			int preo = out[i];
+			int prei = inTree[i];
+			int preo = outTree[i];
 			int curi = ++cntt;
 			int curo = ++cntt;
 			if (prei > 0) {
@@ -189,17 +189,17 @@ public class Code04_PartitionRepeatableSet1 {
 			}
 			addEdge(curi, other(x));
 			addEdge(x, curo);
-			in[i] = curi;
-			out[i] = curo;
+			inTree[i] = curi;
+			outTree[i] = curo;
 			i += lowbit(i);
 		}
 	}
 
-	public static void xToRange(int[] in, int[] out, int i, int x) {
+	public static void xToRange(int[] inTree, int[] outTree, int i, int x) {
 		while (i > 0) {
-			if (in[i] > 0) {
-				addEdge(x, in[i]);
-				addEdge(out[i], other(x));
+			if (inTree[i] > 0) {
+				addEdge(x, inTree[i]);
+				addEdge(outTree[i], other(x));
 			}
 			i -= lowbit(i);
 		}
@@ -214,10 +214,10 @@ public class Code04_PartitionRepeatableSet1 {
 			addEdge(other(y[i]), x[i]);
 		}
 		for (int i = 1; i <= n; i++) {
-			xToRange(in1, out1, small(v[i] - k), i);
-			xToRange(in2, out2, big(v[i] + k), other(i));
-			add(in1, out1, rak[i], i);
-			add(in2, out2, n - rak[i] + 1, other(i));
+			xToRange(inTree1, outTree1, small(v[i] - k), i);
+			xToRange(inTree2, outTree2, big(v[i] + k), other(i));
+			add(inTree1, outTree1, rak[i], i);
+			add(inTree2, outTree2, n - rak[i] + 1, other(i));
 		}
 	}
 
@@ -226,7 +226,7 @@ public class Code04_PartitionRepeatableSet1 {
 			head[i] = dfn[i] = belong[i] = 0;
 		}
 		for (int i = 1; i <= n; i++) {
-			in1[i] = out1[i] = in2[i] = out2[i] = 0;
+			inTree1[i] = outTree1[i] = inTree2[i] = outTree2[i] = 0;
 		}
 		cntt = cntg = cntd = top = sccCnt = 0;
 	}
