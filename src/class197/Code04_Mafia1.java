@@ -19,7 +19,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Code03_Mafia1 {
+public class Code04_Mafia1 {
 
 	public static int MAXM = 50001;
 	public static int MAXT = 500001;
