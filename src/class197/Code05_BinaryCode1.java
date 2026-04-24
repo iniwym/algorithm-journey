@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
-public class Code04_BinaryCode1 {
+public class Code05_BinaryCode1 {
 
 	public static int MAXN = 500001;
 	public static int MAXP = 1000002;
