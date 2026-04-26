@@ -4,7 +4,7 @@ package class197;
 // 测试链接 : https://www.luogu.com.cn/problem/P9139
 // 测试链接 : https://loj.ac/p/6871
 // 提交以下的code，提交时请把类名改成"Main"
-// 本题给的使用空间对于java来说不够，所以java实现无法通过测试
+// 本题给的使用空间对于java来说不够，java的实现无法通过本题
 // 想通过用C++实现，本节课Code08_Meow_II_2文件就是C++的实现
 // 两个版本的逻辑完全一样，C++版本可以通过所有测试
 
