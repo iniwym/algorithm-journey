@@ -1,33 +1,26 @@
 package class197;
 
 // 主席树优化建图，java版
-// 一共有n个点，arr[i]表示i号点的点权，初始时没有边，实现如下三个方法
-// 1) void rangeToX(l, r, v, x, w)
-//         编号[l, r]范围，点权 <= v的每个点，向点x连权值为w的边
-// 2) void xToRange(x, l, r, v, w)
-//         点x向编号[l, r]范围，点权 <= v的每个点，连权值为w的边
-// 3) void rangeToRange(l1, r1, v1, l2, r2, v2, w)
-//         编号[l1, r1]范围，点权 <= v1的每个点
-//         编号[l2, r2]范围，点权 <= v2的每个点
-//         都连权值为w的边
-// 1 <= 所有数值
+// 点的编号范围1~n，点权范围1~v，初始时袋子为空，没有任何边，实现如下方法
+// add(x, v)，编号为x、点权为v的点进入袋子，该编号已经入袋则忽略
+// rangeToX(l, r, x, w)，袋中点权范围l~r的每个点，向点x连边权为w的边
+// xToRange(x, l, r, w)，点x向袋中点权范围l~r的每个点，连边权为w的边
+// rangeToRange(l1, r1, l2, r2, w)，袋中点权范围l1~r1的每个点，向
+//             袋中点权范围l2~r2的每个点，都连一条边权为w的边
 // 建好图之后可以测试图的任何算法，比如dijkstra算法求最短路
 // 对数器验证
 
-import java.util.Arrays;
 import java.util.PriorityQueue;
 
 public class Code06_PersistentSegmentTreeOptimization1 {
 
 	public static int MAXN = 1001;
+	public static int MAXV = 1001;
 	public static int MAXT = 10001;
 	public static int MAXE = 10001;
-	public static int n;
+	public static int n, v, cntt;
 
-	public static int[] arr = new int[MAXN];
-	public static int[] sortv = new int[MAXN];
-	public static int[][] valIdx = new int[MAXN][2];
-	public static int cntv;
+	public static boolean[] inBag = new boolean[MAXN];
 
 	public static int[] head = new int[MAXT];
 	public static int[] nxt = new int[MAXE];
@@ -39,22 +32,7 @@ public class Code06_PersistentSegmentTreeOptimization1 {
 	public static int[] rootIn = new int[MAXN];
 	public static int[] ls = new int[MAXT];
 	public static int[] rs = new int[MAXT];
-	public static int cntt;
-
-	// 返回<= num最右的下标，如果不存在返回0
-	public static int kth(int num) {
-		int l = 1, r = cntv, mid, ans = 0;
-		while (l <= r) {
-			mid = (l + r) >> 1;
-			if (sortv[mid] <= num) {
-				ans = mid;
-				l = mid + 1;
-			} else {
-				r = mid - 1;
-			}
-		}
-		return ans;
-	}
+	public static int curVersion;
 
 	public static void addEdge(int u, int v, int w) {
 		nxt[++cntg] = head[u];
@@ -87,44 +65,53 @@ public class Code06_PersistentSegmentTreeOptimization1 {
 		return rt;
 	}
 
-	public static int addOut(int jobi, int l, int r, int i) {
+	public static int addOut(int jobx, int jobv, int l, int r, int i) {
 		int rt = ++cntt;
 		ls[rt] = ls[i];
 		rs[rt] = rs[i];
 		addEdge(i, rt, 0);
 		if (l == r) {
-			addEdge(jobi, rt, 0);
+			addEdge(jobx, rt, 0);
 		} else {
 			int mid = (l + r) >> 1;
-			if (jobi <= mid) {
-				ls[rt] = addOut(jobi, l, mid, ls[rt]);
+			if (jobv <= mid) {
+				ls[rt] = addOut(jobx, jobv, l, mid, ls[rt]);
 				addEdge(ls[rt], rt, 0);
 			} else {
-				rs[rt] = addOut(jobi, mid + 1, r, rs[rt]);
+				rs[rt] = addOut(jobx, jobv, mid + 1, r, rs[rt]);
 				addEdge(rs[rt], rt, 0);
 			}
 		}
 		return rt;
 	}
 
-	public static int addIn(int jobi, int l, int r, int i) {
+	public static int addIn(int jobx, int jobv, int l, int r, int i) {
 		int rt = ++cntt;
 		ls[rt] = ls[i];
 		rs[rt] = rs[i];
 		addEdge(rt, i, 0);
 		if (l == r) {
-			addEdge(rt, jobi, 0);
+			addEdge(rt, jobx, 0);
 		} else {
 			int mid = (l + r) >> 1;
-			if (jobi <= mid) {
-				ls[rt] = addIn(jobi, l, mid, ls[rt]);
+			if (jobv <= mid) {
+				ls[rt] = addIn(jobx, jobv, l, mid, ls[rt]);
 				addEdge(rt, ls[rt], 0);
 			} else {
-				rs[rt] = addIn(jobi, mid + 1, r, rs[rt]);
+				rs[rt] = addIn(jobx, jobv, mid + 1, r, rs[rt]);
 				addEdge(rt, rs[rt], 0);
 			}
 		}
 		return rt;
+	}
+
+	public static void add(int curx, int curv) {
+		if (!inBag[curx]) {
+			inBag[curx] = true;
+			curVersion++;
+			rootOut[curVersion] = addOut(curx, curv, 1, v, rootOut[curVersion - 1]);
+			rootIn[curVersion] = addIn(curx, curv, 1, v, rootIn[curVersion - 1]);
+		}
 	}
 
 	public static void rangeToX(int jobl, int jobr, int jobx, int jobw, int l, int r, int i) {
@@ -141,8 +128,8 @@ public class Code06_PersistentSegmentTreeOptimization1 {
 		}
 	}
 
-	public static void rangeToX(int l, int r, int v, int x, int w) {
-		rangeToX(l, r, x, w, 1, n, rootOut[kth(v)]);
+	public static void rangeToX(int l, int r, int x, int w) {
+		rangeToX(l, r, x, w, 1, v, rootOut[curVersion]);
 	}
 
 	public static void xToRange(int jobx, int jobl, int jobr, int jobw, int l, int r, int i) {
@@ -159,47 +146,24 @@ public class Code06_PersistentSegmentTreeOptimization1 {
 		}
 	}
 
-	public static void xToRange(int x, int l, int r, int v, int w) {
-		xToRange(x, l, r, w, 1, n, rootIn[kth(v)]);
+	public static void xToRange(int x, int l, int r, int w) {
+		xToRange(x, l, r, w, 1, v, rootIn[curVersion]);
 	}
 
-	public static void rangeToRange(int l1, int r1, int v1, int l2, int r2, int v2, int w) {
+	public static void rangeToRange(int l1, int r1, int l2, int r2, int w) {
 		int x = ++cntt;
 		int y = ++cntt;
-		rangeToX(l1, r1, v1, x, 0);
-		xToRange(y, l2, r2, v2, 0);
+		rangeToX(l1, r1, x, 0);
+		xToRange(y, l2, r2, 0);
 		addEdge(x, y, w);
 	}
 
-	public static void buildGraph() {
-		for (int i = 1; i <= n; i++) {
-			sortv[i] = arr[i];
-			valIdx[i][0] = arr[i];
-			valIdx[i][1] = i;
-		}
-		Arrays.sort(sortv, 1, n + 1);
-		cntv = 1;
-		for (int i = 2; i <= n; i++) {
-			if (sortv[cntv] != sortv[i]) {
-				sortv[++cntv] = sortv[i];
-			}
-		}
-		Arrays.sort(valIdx, 1, n + 1, (a, b) -> Integer.compare(a[0], b[0]));
-		cntt = n;
-		rootOut[0] = buildOut(1, n);
-		rootIn[0] = buildIn(1, n);
-		int curOut = rootOut[0], curIn = rootIn[0], rank, idx;
-		for (int i = 1; i <= n; i++) {
-			rank = kth(valIdx[i][0]);
-			idx = valIdx[i][1];
-			curOut = addOut(idx, 1, n, curOut);
-			curIn = addIn(idx, 1, n, curIn);
-			rootOut[rank] = curOut;
-			rootIn[rank] = curIn;
-		}
-	}
-
 	public static int MAX_2 = 100001;
+	public static boolean[] in_bag_2 = new boolean[MAX_2];
+	public static int[] bag_id = new int[MAX_2];
+	public static int[] bag_val = new int[MAX_2];
+	public static int bag_siz;
+
 	public static int[] head_2 = new int[MAX_2];
 	public static int[] nxt_2 = new int[MAX_2];
 	public static int[] to_2 = new int[MAX_2];
@@ -213,27 +177,37 @@ public class Code06_PersistentSegmentTreeOptimization1 {
 		head_2[u] = cnt_2;
 	}
 
-	public static void rangeToX_2(int l, int r, int v, int x, int w) {
-		for (int i = l; i <= r; i++) {
-			if (arr[i] <= v) {
-				addEdge_2(i, x, w);
+	public static void add_2(int x, int v) {
+		if (!in_bag_2[x]) {
+			in_bag_2[x] = true;
+			bag_id[++bag_siz] = x;
+			bag_val[bag_siz] = v;
+		}
+	}
+
+	public static void rangeToX_2(int l, int r, int x, int w) {
+		for (int i = 1; i <= bag_siz; i++) {
+			if (bag_val[i] >= l && bag_val[i] <= r) {
+				addEdge_2(bag_id[i], x, w);
 			}
 		}
 	}
 
-	public static void xToRange_2(int x, int l, int r, int v, int w) {
-		for (int i = l; i <= r; i++) {
-			if (arr[i] <= v) {
-				addEdge_2(x, i, w);
+	public static void xToRange_2(int x, int l, int r, int w) {
+		for (int i = 1; i <= bag_siz; i++) {
+			if (bag_val[i] >= l && bag_val[i] <= r) {
+				addEdge_2(x, bag_id[i], w);
 			}
 		}
 	}
 
-	public static void rangeToRange_2(int l1, int r1, int v1, int l2, int r2, int v2, int w) {
-		for (int i = l1; i <= r1; i++) {
-			for (int j = l2; j <= r2; j++) {
-				if (arr[i] <= v1 && arr[j] <= v2) {
-					addEdge_2(i, j, w);
+	public static void rangeToRange_2(int l1, int r1, int l2, int r2, int w) {
+		for (int i = 1; i <= bag_siz; i++) {
+			if (bag_val[i] >= l1 && bag_val[i] <= r1) {
+				for (int j = 1; j <= bag_siz; j++) {
+					if (bag_val[j] >= l2 && bag_val[j] <= r2) {
+						addEdge_2(bag_id[i], bag_id[j], w);
+					}
 				}
 			}
 		}
@@ -314,9 +288,13 @@ public class Code06_PersistentSegmentTreeOptimization1 {
 		}
 		cntg = 0;
 		cntt = 0;
+		curVersion = 0;
 		for (int i = 1; i <= n; i++) {
+			inBag[i] = false;
+			in_bag_2[i] = false;
 			head_2[i] = 0;
 		}
+		bag_siz = 0;
 		cnt_2 = 0;
 	}
 
@@ -324,40 +302,44 @@ public class Code06_PersistentSegmentTreeOptimization1 {
 		System.out.println("主席树优化建图");
 		System.out.println("============");
 		n = 100;
-		int valMax = 1000;
-		int weightMax = 10000;
+		v = 200;
+		int weightMax = 1000;
 		int round = 20;
 		for (int t = 1; t <= round; t++) {
 			System.out.println("第" + t + "轮");
 			System.out.println("测试开始");
-			for (int i = 1; i <= n; i++) {
-				arr[i] = random(valMax);
-			}
-			buildGraph();
+			cntt = n;
+			rootOut[0] = buildOut(1, v);
+			rootIn[0] = buildIn(1, v);
 			int opCnt = 200;
 			for (int i = 1; i <= opCnt; i++) {
-				int op = random(3);
-				int a = random(n);
-				int b = random(n);
-				int l = Math.min(a, b);
-				int r = Math.max(a, b);
-				int v = random(valMax);
-				int x = random(n);
-				int w = random(weightMax);
+				int op = random(4);
 				if (op == 1) {
-					rangeToX(l, r, v, x, w);
-					rangeToX_2(l, r, v, x, w);
-				} else if (op == 2) {
-					xToRange(x, l, r, v, w);
-					xToRange_2(x, l, r, v, w);
+					int curx = random(n);
+					int curv = random(v);
+					add(curx, curv);
+					add_2(curx, curv);
 				} else {
-					a = random(n);
-					b = random(n);
+					int a = random(v);
+					int b = random(v);
+					int l = Math.min(a, b);
+					int r = Math.max(a, b);
+					a = random(v);
+					b = random(v);
 					int l2 = Math.min(a, b);
 					int r2 = Math.max(a, b);
-					int v2 = random(valMax);
-					rangeToRange(l, r, v, l2, r2, v2, w);
-					rangeToRange_2(l, r, v, l2, r2, v2, w);
+					int x = random(n);
+					int w = random(weightMax);
+					if (op == 2) {
+						rangeToX(l, r, x, w);
+						rangeToX_2(l, r, x, w);
+					} else if (op == 3) {
+						xToRange(x, l, r, w);
+						xToRange_2(x, l, r, w);
+					} else {
+						rangeToRange(l, r, l2, r2, w);
+						rangeToRange_2(l, r, l2, r2, w);
+					}
 				}
 			}
 			for (int x = 1; x <= n; x++) {
