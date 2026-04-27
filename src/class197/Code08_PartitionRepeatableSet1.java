@@ -39,11 +39,11 @@ public class Code08_PartitionRepeatableSet1 {
 	public static int[] belong = new int[MAXT];
 	public static int sccCnt;
 
-	public static int[] inTree1 = new int[MAXN];
 	public static int[] outTree1 = new int[MAXN];
+	public static int[] inTree1 = new int[MAXN];
 
-	public static int[] inTree2 = new int[MAXN];
 	public static int[] outTree2 = new int[MAXN];
+	public static int[] inTree2 = new int[MAXN];
 
 	// 迭代版需要的栈，讲解118讲了递归改迭代的技巧
 	public static int[] stau = new int[MAXT];
@@ -177,25 +177,38 @@ public class Code08_PartitionRepeatableSet1 {
 		return i & -i;
 	}
 
-	public static void add(int[] inTree, int[] outTree, int i, int x) {
+	public static void addOut(int[] outTree, int i, int x) {
 		while (i <= n) {
-			int prei = inTree[i];
 			int preo = outTree[i];
-			int curi = ++cntt;
 			int curo = ++cntt;
-			if (prei > 0) {
-				addEdge(curi, prei);
+			if (preo > 0) {
 				addEdge(preo, curo);
 			}
-			addEdge(curi, other(x));
 			addEdge(x, curo);
-			inTree[i] = curi;
 			outTree[i] = curo;
 			i += lowbit(i);
 		}
 	}
 
-	public static void xToRange(int[] inTree, int[] outTree, int i, int x) {
+	public static void addIn(int[] inTree, int i, int x) {
+		while (i <= n) {
+			int prei = inTree[i];
+			int curi = ++cntt;
+			if (prei > 0) {
+				addEdge(curi, prei);
+			}
+			addEdge(curi, x);
+			inTree[i] = curi;
+			i += lowbit(i);
+		}
+	}
+
+	public static void add(int[] outTree, int[] inTree, int i, int x) {
+		addOut(outTree, i, x);
+		addIn(inTree, i, other(x));
+	}
+
+	public static void xToRange(int[] outTree, int[] inTree, int i, int x) {
 		while (i > 0) {
 			if (inTree[i] > 0) {
 				addEdge(x, inTree[i]);
@@ -214,10 +227,10 @@ public class Code08_PartitionRepeatableSet1 {
 			addEdge(other(y[i]), x[i]);
 		}
 		for (int i = 1; i <= n; i++) {
-			xToRange(inTree1, outTree1, small(v[i] - k), i);
-			xToRange(inTree2, outTree2, big(v[i] + k), other(i));
-			add(inTree1, outTree1, rak[i], i);
-			add(inTree2, outTree2, n - rak[i] + 1, other(i));
+			xToRange(outTree1, inTree1, small(v[i] - k), i);
+			xToRange(outTree2, inTree2, big(v[i] + k), other(i));
+			add(outTree1, inTree1, rak[i], i);
+			add(outTree2, inTree2, n - rak[i] + 1, other(i));
 		}
 	}
 

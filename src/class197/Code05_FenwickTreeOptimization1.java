@@ -42,24 +42,37 @@ public class Code05_FenwickTreeOptimization1 {
 		return i & -i;
 	}
 
+	public static void addOut(int x, int xv) {
+		while (xv <= v) {
+			int preo = outTree[xv];
+			int curo = ++cntt;
+			if (preo > 0) {
+				addEdge(preo, curo, 0);
+			}
+			addEdge(x, curo, 0);
+			outTree[xv] = curo;
+			xv += lowbit(xv);
+		}
+	}
+
+	public static void addIn(int x, int xv) {
+		while (xv <= v) {
+			int prei = inTree[xv];
+			int curi = ++cntt;
+			if (prei > 0) {
+				addEdge(curi, prei, 0);
+			}
+			addEdge(curi, x, 0);
+			inTree[xv] = curi;
+			xv += lowbit(xv);
+		}
+	}
+
 	public static void add(int x, int xv) {
 		if (!inBag[x]) {
 			inBag[x] = true;
-			while (xv <= v) {
-				int preo = outTree[xv];
-				int prei = inTree[xv];
-				int curo = ++cntt;
-				int curi = ++cntt;
-				if (preo > 0) {
-					addEdge(preo, curo, 0);
-					addEdge(curi, prei, 0);
-				}
-				addEdge(x, curo, 0);
-				addEdge(curi, x, 0);
-				outTree[xv] = curo;
-				inTree[xv] = curi;
-				xv += lowbit(xv);
-			}
+			addOut(x, xv);
+			addIn(x, xv);
 		}
 	}
 
