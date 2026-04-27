@@ -10,7 +10,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Code09_Meow_II_1 {
+public class Code08_Meow_II_1 {
 
 	public static int MAXV = 50001;
 	public static int MAXN = 200001;

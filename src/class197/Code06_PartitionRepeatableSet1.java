@@ -10,7 +10,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Code08_PartitionRepeatableSet1 {
+public class Code06_PartitionRepeatableSet1 {
 
 	public static int MAXN = 20001;
 	public static int MAXM = 20001;

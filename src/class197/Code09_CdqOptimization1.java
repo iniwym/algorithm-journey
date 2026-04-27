@@ -11,14 +11,14 @@ package class197;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
-public class Code07_CdqOptimization1 {
+public class Code09_CdqOptimization1 {
 
 	public static int MAXN = 101;
 	public static int MAXM = 1001;
 	public static int MAXV = 10001;
 	public static int MAXT = 100001;
 	public static int MAXE = 100001;
-	public static int n, m, maxc;
+	public static int n, m, maxc, cntt;
 	public static int[] a = new int[MAXN];
 	public static int[] b = new int[MAXN];
 	public static int[] c = new int[MAXN];
@@ -40,9 +40,8 @@ public class Code07_CdqOptimization1 {
 	public static int[] weightp = new int[MAXM << 1];
 	public static int cntp;
 
-	// 树状数组组织虚点，生成新的虚点方便连边，使用后要清空
+	// 树状数组
 	public static int[] tree = new int[MAXV];
-	public static int cntt;
 
 	public static void addEdge(int u, int v, int w) {
 		nextg[++cntg] = headg[u];
