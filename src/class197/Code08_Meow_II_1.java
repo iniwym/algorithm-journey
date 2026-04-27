@@ -2,11 +2,7 @@ package class197;
 
 // 喵了个喵 II，java版
 // 测试链接 : https://www.luogu.com.cn/problem/P9139
-// 测试链接 : https://loj.ac/p/6871
-// 提交以下的code，提交时请把类名改成"Main"
-// 本题给的使用空间对于java来说不够，java的实现无法通过本题
-// 想通过用C++实现，本节课Code08_Meow_II_2文件就是C++的实现
-// 两个版本的逻辑完全一样，C++版本可以通过所有测试
+// 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,6 +48,27 @@ public class Code08_Meow_II_1 {
 
 	public static int[] ans = new int[MAXN];
 
+	// 迭代版需要的栈，讲解118讲了递归改迭代的技巧
+	public static int[] stau = new int[MAXT];
+	public static int[] stas = new int[MAXT];
+	public static int[] stae = new int[MAXT];
+	public static int u, status, e;
+	public static int stacksize;
+
+	public static void push(int u, int status, int e) {
+		stau[stacksize] = u;
+		stas[stacksize] = status;
+		stae[stacksize] = e;
+		stacksize++;
+	}
+
+	public static void pop() {
+		stacksize--;
+		u = stau[stacksize];
+		status = stas[stacksize];
+		e = stae[stacksize];
+	}
+
 	public static void addPair(int l, int r, int x) {
 		groupArr[++cnta][0] = l;
 		groupArr[cnta][1] = r;
@@ -64,13 +81,14 @@ public class Code08_Meow_II_1 {
 		head[u] = cntg;
 	}
 
-	public static void tarjan(int u) {
+	// 递归版
+	public static void tarjan1(int u) {
 		dfn[u] = low[u] = ++cntd;
 		sta[++top] = u;
 		for (int e = head[u]; e > 0; e = nxt[e]) {
 			int v = to[e];
 			if (dfn[v] == 0) {
-				tarjan(v);
+				tarjan1(v);
 				low[u] = Math.min(low[u], low[v]);
 			} else {
 				if (belong[v] == 0) {
@@ -85,6 +103,48 @@ public class Code08_Meow_II_1 {
 				pop = sta[top--];
 				belong[pop] = sccCnt;
 			} while (pop != u);
+		}
+	}
+
+	// 迭代版
+	public static void tarjan2(int node) {
+		stacksize = 0;
+		push(node, -1, -1);
+		int v;
+		while (stacksize > 0) {
+			pop();
+			if (status == -1) {
+				dfn[u] = low[u] = ++cntd;
+				sta[++top] = u;
+				e = head[u];
+			} else {
+				v = to[e];
+				if (status == 0) {
+					low[u] = Math.min(low[u], low[v]);
+				}
+				if (status == 1 && belong[v] == 0) {
+					low[u] = Math.min(low[u], dfn[v]);
+				}
+				e = nxt[e];
+			}
+			if (e != 0) {
+				v = to[e];
+				if (dfn[v] == 0) {
+					push(u, 0, e);
+					push(v, -1, -1);
+				} else {
+					push(u, 1, e);
+				}
+			} else {
+				if (dfn[u] == low[u]) {
+					sccCnt++;
+					int pop;
+					do {
+						pop = sta[top--];
+						belong[pop] = sccCnt;
+					} while (pop != u);
+				}
+			}
 		}
 	}
 
@@ -216,7 +276,8 @@ public class Code08_Meow_II_1 {
 		buildGraph();
 		for (int i = 1; i <= v << 1; i++) {
 			if (dfn[i] == 0) {
-				tarjan(i);
+				// tarjan1(i);
+				tarjan2(i);
 			}
 		}
 		boolean check = true;

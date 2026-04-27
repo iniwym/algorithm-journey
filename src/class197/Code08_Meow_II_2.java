@@ -2,7 +2,6 @@ package class197;
 
 // 喵了个喵 II，C++版
 // 测试链接 : https://www.luogu.com.cn/problem/P9139
-// 测试链接 : https://loj.ac/p/6871
 // 如下实现是C++的版本，C++版本和java版本逻辑完全一样
 // 提交如下代码，可以通过所有测试用例
 
