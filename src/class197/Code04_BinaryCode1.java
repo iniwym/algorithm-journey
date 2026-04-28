@@ -25,6 +25,7 @@ public class Code04_BinaryCode1 {
 	public static int MAXT = 5000001;
 	public static int MAXE = 10000001;
 	public static int n, cntt;
+
 	public static String[] arrs = new String[MAXN];
 	public static int[] pending = new int[MAXN];
 
