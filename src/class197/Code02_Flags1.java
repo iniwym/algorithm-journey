@@ -17,7 +17,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Code03_Flags1 {
+public class Code02_Flags1 {
 
 	public static int MAXN = 10001;
 	public static int MAXT = 100001;
