@@ -1,6 +1,6 @@
 package class198;
 
-// 喵了个喵 II，主席树优化建图，C++版
+// 喵了个喵 II，树状数组优化建图，C++版
 // 测试链接 : https://www.luogu.com.cn/problem/P9139
 // 如下实现是C++的版本，C++版本和java版本逻辑完全一样
 // 提交如下代码，可以通过所有测试用例
@@ -30,8 +30,8 @@ package class198;
 //
 //const int MAXV = 50001;
 //const int MAXN = 200001;
-//const int MAXT = 10000001;
-//const int MAXE = 50000001;
+//const int MAXT = 5000001;
+//const int MAXE = 20000001;
 //int v, n, cntt;
 //
 //Node vi[MAXN];
@@ -53,10 +53,8 @@ package class198;
 //int belong[MAXT];
 //int sccCnt;
 //
-//int rootOut[MAXN];
-//int rootIn[MAXN];
-//int ls[MAXT];
-//int rs[MAXT];
+//int arr[MAXN];
+//int tmp[MAXN];
 //
 //int ans[MAXN];
 //
@@ -90,116 +88,65 @@ package class198;
 //    }
 //}
 //
-//int buildOut(int l, int r) {
-//    int rt = ++cntt;
-//    if (l < r) {
-//        int mid = (l + r) >> 1;
-//        ls[rt] = buildOut(l, mid);
-//        rs[rt] = buildOut(mid + 1, r);
-//        addEdge(ls[rt], rt);
-//        addEdge(rs[rt], rt);
-//    }
-//    return rt;
-//}
-//
-//int buildIn(int l, int r) {
-//    int rt = ++cntt;
-//    if (l < r) {
-//        int mid = (l + r) >> 1;
-//        ls[rt] = buildIn(l, mid);
-//        rs[rt] = buildIn(mid + 1, r);
-//        addEdge(rt, ls[rt]);
-//        addEdge(rt, rs[rt]);
-//    }
-//    return rt;
-//}
-//
-//int addOut(int jobi, int jobx, int l, int r, int i) {
-//    int rt = ++cntt;
-//    ls[rt] = ls[i];
-//    rs[rt] = rs[i];
-//    addEdge(i, rt);
-//    if (l == r) {
-//        addEdge(jobx, rt);
-//    } else {
-//        int mid = (l + r) >> 1;
-//        if (jobi <= mid) {
-//            ls[rt] = addOut(jobi, jobx, l, mid, ls[rt]);
-//            addEdge(ls[rt], rt);
-//        } else {
-//            rs[rt] = addOut(jobi, jobx, mid + 1, r, rs[rt]);
-//            addEdge(rs[rt], rt);
-//        }
-//    }
-//    return rt;
-//}
-//
-//int addIn(int jobi, int jobx, int l, int r, int i) {
-//    int rt = ++cntt;
-//    ls[rt] = ls[i];
-//    rs[rt] = rs[i];
-//    addEdge(rt, i);
-//    if (l == r) {
-//        addEdge(rt, jobx);
-//    } else {
-//        int mid = (l + r) >> 1;
-//        if (jobi <= mid) {
-//            ls[rt] = addIn(jobi, jobx, l, mid, ls[rt]);
-//            addEdge(rt, ls[rt]);
-//        } else {
-//            rs[rt] = addIn(jobi, jobx, mid + 1, r, rs[rt]);
-//            addEdge(rt, rs[rt]);
-//        }
-//    }
-//    return rt;
-//}
-//
-//void xToRange(int jobx, int jobl, int jobr, int l, int r, int i) {
-//    if (jobl <= l && r <= jobr) {
-//        addEdge(jobx, i);
-//    } else {
-//        int mid = (l + r) >> 1;
-//        if (jobl <= mid) {
-//            xToRange(jobx, jobl, jobr, l, mid, ls[i]);
-//        }
-//        if (jobr > mid) {
-//            xToRange(jobx, jobl, jobr, mid + 1, r, rs[i]);
-//        }
-//    }
-//}
-//
-//void rangeToX(int jobl, int jobr, int jobx, int l, int r, int i) {
-//    if (jobl <= l && r <= jobr) {
-//        addEdge(i, jobx);
-//    } else {
-//        int mid = (l + r) >> 1;
-//        if (jobl <= mid) {
-//            rangeToX(jobl, jobr, jobx, l, mid, ls[i]);
-//        }
-//        if (jobr > mid) {
-//            rangeToX(jobl, jobr, jobx, mid + 1, r, rs[i]);
-//        }
-//    }
-//}
-//
 //int other(int x) {
 //    return x <= v ? x + v : x - v;
+//}
+//
+//void merge(int l, int mid, int r) {
+//    int preOut = 0, curOut = 0, preIn = 0, curIn = 0;
+//    for (int p1 = mid + 1, p2 = r; p2 >= mid + 1; p2--) {
+//        curOut = ++cntt;
+//        curIn = ++cntt;
+//        while (p1 - 1 >= l && group[arr[p1 - 1]].l >= group[arr[p2]].l) {
+//            p1--;
+//            addEdge(group[arr[p1]].x, curOut);
+//            addEdge(curIn, other(group[arr[p1]].x));
+//        }
+//        if (preOut > 0) {
+//            addEdge(preOut, curOut);
+//            addEdge(curIn, preIn);
+//        }
+//        addEdge(curOut, other(group[arr[p2]].x));
+//        addEdge(group[arr[p2]].x, curIn);
+//        preOut = curOut;
+//        preIn = curIn;
+//    }
+//    int p1 = l, p2 = mid + 1, tsiz = 0;
+//    while (p1 <= mid && p2 <= r) {
+//        if (group[arr[p1]].l <= group[arr[p2]].l) {
+//            tmp[++tsiz] = arr[p1++];
+//        } else {
+//            tmp[++tsiz] = arr[p2++];
+//        }
+//    }
+//    while (p1 <= mid) {
+//        tmp[++tsiz] = arr[p1++];
+//    }
+//    while (p2 <= r) {
+//        tmp[++tsiz] = arr[p2++];
+//    }
+//    for (int i = l, j = 1; i <= r; i++, j++) {
+//        arr[i] = tmp[j];
+//    }
+//}
+//
+//void cdq(int l, int r) {
+//    if (l == r) {
+//        return;
+//    }
+//    int mid = (l + r) / 2;
+//    cdq(l, mid);
+//    cdq(mid + 1, r);
+//    merge(l, mid, r);
 //}
 //
 //void buildGraph() {
 //    sort(group + 1, group + cntp + 1, GroupCmp);
 //    cntt = v << 1;
-//    rootOut[0] = buildOut(1, n);
-//    rootIn[0] = buildIn(1, n);
 //    for (int i = 1; i <= cntp; i++) {
-//        int l = group[i].l;
-//        int r = group[i].r;
-//        int x = group[i].x;
-//        xToRange(x, l, r, 1, n, rootIn[i - 1]);
-//        rangeToX(l, r, other(x), 1, n, rootOut[i - 1]);
-//        rootIn[i] = addIn(l, other(x), 1, n, rootIn[i - 1]);
-//        rootOut[i] = addOut(l, x, 1, n, rootOut[i - 1]);
+//        arr[i] = i;
 //    }
+//    cdq(1, cntp);
 //}
 //
 //bool compute() {

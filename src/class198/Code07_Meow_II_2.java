@@ -34,9 +34,9 @@ package class198;
 //const int MAXE = 20000001;
 //int v, n, cntt;
 //
-//Node arr[MAXN];
-//Group groupArr[MAXN];
-//int cnta;
+//Node vi[MAXN];
+//Group group[MAXN];
+//int cntp;
 //
 //int head[MAXT];
 //int nxt[MAXE];
@@ -141,12 +141,12 @@ package class198;
 //}
 //
 //void buildGraph() {
-//    sort(groupArr + 1, groupArr + cnta + 1, GroupCmp);
+//    sort(group + 1, group + cntp + 1, GroupCmp);
 //    cntt = v << 1;
-//    for (int i = 1; i <= cnta; i++) {
-//        int l = groupArr[i].l;
+//    for (int i = 1; i <= cntp; i++) {
+//        int l = group[i].l;
 //        int p = n - l + 1;
-//        int x = groupArr[i].x;
+//        int x = group[i].x;
 //        xToRange(x, p);
 //        rangeToX(p, other(x));
 //        addIn(p, other(x));
@@ -155,17 +155,17 @@ package class198;
 //}
 //
 //bool compute() {
-//    sort(arr + 1, arr + n + 1, NodeCmp);
+//    sort(vi + 1, vi + n + 1, NodeCmp);
 //    for (int i = 1; i <= n; i += 4) {
-//        int x = arr[i].v;
-//        int a = arr[i].i;
-//        int b = arr[i + 1].i;
-//        int c = arr[i + 2].i;
-//        int d = arr[i + 3].i;
-//        groupArr[++cnta] = { a, b, x };
-//        groupArr[++cnta] = { c, d, x };
-//        groupArr[++cnta] = { a, c, x + v };
-//        groupArr[++cnta] = { b, d, x + v };
+//        int x = vi[i].v;
+//        int a = vi[i].i;
+//        int b = vi[i + 1].i;
+//        int c = vi[i + 2].i;
+//        int d = vi[i + 3].i;
+//        group[++cntp] = { a, b, x };
+//        group[++cntp] = { c, d, x };
+//        group[++cntp] = { a, c, x + v };
+//        group[++cntp] = { b, d, x + v };
 //    }
 //    buildGraph();
 //    for (int i = 1; i <= v << 1; i++) {
@@ -182,11 +182,11 @@ package class198;
 //    }
 //    if (check) {
 //        for (int i = 1; i <= n; i += 4) {
-//            int x = arr[i].v;
-//            int a = arr[i].i;
-//            int b = arr[i + 1].i;
-//            int c = arr[i + 2].i;
-//            int d = arr[i + 3].i;
+//            int x = vi[i].v;
+//            int a = vi[i].i;
+//            int b = vi[i + 1].i;
+//            int c = vi[i + 2].i;
+//            int d = vi[i + 3].i;
 //            if (belong[x] < belong[x + v]) {
 //                ans[a] = 0;
 //                ans[b] = 1;
@@ -209,8 +209,8 @@ package class198;
 //    cin >> v;
 //    n = v << 2;
 //    for (int i = 1; i <= n; i++) {
-//        cin >> arr[i].v;
-//        arr[i].i = i;
+//        cin >> vi[i].v;
+//        vi[i].i = i;
 //    }
 //    bool check = compute();
 //    if (check) {

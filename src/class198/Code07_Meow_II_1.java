@@ -19,11 +19,10 @@ public class Code07_Meow_II_1 {
 	public static int v, n, cntt;
 
 	// 值v、位置i
-	public static int[][] arr = new int[MAXN][2];
-
+	public static int[][] vi = new int[MAXN][2];
 	// 左l、右r、决定编号x
-	public static int[][] groupArr = new int[MAXN][3];
-	public static int cnta;
+	public static int[][] group = new int[MAXN][3];
+	public static int cntp;
 
 	public static int[] head = new int[MAXT];
 	public static int[] nxt = new int[MAXE];
@@ -68,9 +67,9 @@ public class Code07_Meow_II_1 {
 	}
 
 	public static void addPair(int l, int r, int x) {
-		groupArr[++cnta][0] = l;
-		groupArr[cnta][1] = r;
-		groupArr[cnta][2] = x;
+		group[++cntp][0] = l;
+		group[cntp][1] = r;
+		group[cntp][2] = x;
 	}
 
 	public static void addEdge(int u, int v) {
@@ -199,13 +198,13 @@ public class Code07_Meow_II_1 {
 	}
 
 	public static void buildGraph() {
-		Arrays.sort(groupArr, 1, cnta + 1, (a, b) -> a[1] - b[1]);
+		Arrays.sort(group, 1, cntp + 1, (a, b) -> a[1] - b[1]);
 		cntt = v << 1;
-		for (int i = 1; i <= cnta; i++) {
-			int l = groupArr[i][0];
+		for (int i = 1; i <= cntp; i++) {
+			int l = group[i][0];
 			// 后缀查询转化成前缀查询
 			int p = n - l + 1;
-			int x = groupArr[i][2];
+			int x = group[i][2];
 			xToRange(x, p);
 			rangeToX(p, other(x));
 			addIn(p, other(x));
@@ -214,13 +213,13 @@ public class Code07_Meow_II_1 {
 	}
 
 	public static boolean compute() {
-		Arrays.sort(arr, 1, n + 1, (a, b) -> a[0] != b[0] ? a[0] - b[0] : a[1] - b[1]);
+		Arrays.sort(vi, 1, n + 1, (a, b) -> a[0] != b[0] ? a[0] - b[0] : a[1] - b[1]);
 		for (int i = 1; i <= n; i += 4) {
-			int x = arr[i][0];
-			int a = arr[i][1];
-			int b = arr[i + 1][1];
-			int c = arr[i + 2][1];
-			int d = arr[i + 3][1];
+			int x = vi[i][0];
+			int a = vi[i][1];
+			int b = vi[i + 1][1];
+			int c = vi[i + 2][1];
+			int d = vi[i + 3][1];
 			addPair(a, b, x);
 			addPair(c, d, x);
 			addPair(a, c, x + v);
@@ -242,11 +241,11 @@ public class Code07_Meow_II_1 {
 		}
 		if (check) {
 			for (int i = 1; i <= n; i += 4) {
-				int x = arr[i][0];
-				int a = arr[i][1];
-				int b = arr[i + 1][1];
-				int c = arr[i + 2][1];
-				int d = arr[i + 3][1];
+				int x = vi[i][0];
+				int a = vi[i][1];
+				int b = vi[i + 1][1];
+				int c = vi[i + 2][1];
+				int d = vi[i + 3][1];
 				if (belong[x] < belong[x + v]) {
 					ans[a] = 0;
 					ans[b] = 1;
@@ -269,8 +268,8 @@ public class Code07_Meow_II_1 {
 		v = in.nextInt();
 		n = v << 2;
 		for (int i = 1; i <= n; i++) {
-			arr[i][0] = in.nextInt();
-			arr[i][1] = i;
+			vi[i][0] = in.nextInt();
+			vi[i][1] = i;
 		}
 		boolean check = compute();
 		if (check) {
