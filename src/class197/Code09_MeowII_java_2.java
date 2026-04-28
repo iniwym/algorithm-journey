@@ -1,6 +1,6 @@
 package class197;
 
-// 喵了个喵II，java版
+// 喵了个喵II，主席树优化建图，java版
 // 测试链接 : https://www.luogu.com.cn/problem/P9139
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
@@ -10,7 +10,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Code09_MeowII_1 {
+public class Code09_MeowII_java_2 {
 
 	public static int MAXV = 50001;
 	public static int MAXN = 200001;
