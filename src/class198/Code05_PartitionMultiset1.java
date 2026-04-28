@@ -10,7 +10,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Code05_Partition1 {
+public class Code05_PartitionMultiset1 {
 
 	public static int MAXN = 20001;
 	public static int MAXM = 20001;
