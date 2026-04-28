@@ -1,6 +1,6 @@
-package class197;
+package class198;
 
-// 喵了个喵II，主席树优化建图，java版
+// 喵了个喵 II，主席树优化建图，java版
 // 测试链接 : https://www.luogu.com.cn/problem/P9139
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
@@ -10,13 +10,13 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Code09_MeowII_java_2 {
+public class Code08_Meow_II_1 {
 
 	public static int MAXV = 50001;
 	public static int MAXN = 200001;
 	public static int MAXT = 10000001;
 	public static int MAXE = 50000001;
-	public static int v, n;
+	public static int v, n, cntt;
 
 	// 值v、位置i
 	public static int[][] arr = new int[MAXN][2];
@@ -44,7 +44,6 @@ public class Code09_MeowII_java_2 {
 	public static int[] rootIn = new int[MAXN];
 	public static int[] ls = new int[MAXT];
 	public static int[] rs = new int[MAXT];
-	public static int cntt;
 
 	public static int[] ans = new int[MAXN];
 

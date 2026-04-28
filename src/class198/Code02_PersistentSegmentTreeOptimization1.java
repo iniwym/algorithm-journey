@@ -1,4 +1,4 @@
-package class197;
+package class198;
 
 // 主席树优化建图，java版
 // 点的编号范围1~n，点权范围1~v，初始时袋子为空，没有任何边，实现如下方法
@@ -12,7 +12,7 @@ package class197;
 
 import java.util.PriorityQueue;
 
-public class Code06_PersistentSegmentTreeOptimization1 {
+public class Code02_PersistentSegmentTreeOptimization1 {
 
 	public static int MAXN = 1001;
 	public static int MAXV = 1001;

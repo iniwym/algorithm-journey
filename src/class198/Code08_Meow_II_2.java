@@ -1,6 +1,6 @@
-package class197;
+package class198;
 
-// 喵了个喵II，主席树优化建图，C++版
+// 喵了个喵 II，主席树优化建图，C++版
 // 测试链接 : https://www.luogu.com.cn/problem/P9139
 // 如下实现是C++的版本，C++版本和java版本逻辑完全一样
 // 提交如下代码，可以通过所有测试用例
@@ -32,7 +32,7 @@ package class197;
 //const int MAXN = 200001;
 //const int MAXT = 10000001;
 //const int MAXE = 50000001;
-//int v, n;
+//int v, n, cntt;
 //
 //Node arr[MAXN];
 //Group groupArr[MAXN];
@@ -57,7 +57,6 @@ package class197;
 //int rootIn[MAXN];
 //int ls[MAXT];
 //int rs[MAXT];
-//int cntt;
 //
 //int ans[MAXN];
 //

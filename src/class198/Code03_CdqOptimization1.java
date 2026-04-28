@@ -1,4 +1,4 @@
-package class197;
+package class198;
 
 // cdq分治优化建图，java版
 // 一共n个点，每个点给定三个点权，a[i]、b[i]、c[i]，初始时没有边
@@ -11,7 +11,7 @@ package class197;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
-public class Code07_CdqOptimization1 {
+public class Code03_CdqOptimization1 {
 
 	public static int MAXN = 101;
 	public static int MAXM = 1001;
