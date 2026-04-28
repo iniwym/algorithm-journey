@@ -1,6 +1,6 @@
 package class197;
 
-// 划分可重集，java版
+// 划分可重集，主席树优化建图，java版
 // 测试链接 : https://www.luogu.com.cn/problem/P7477
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
@@ -10,12 +10,12 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Code06_PartitionRepeatableSet1 {
+public class Code08_Partition_java_2 {
 
 	public static int MAXN = 20001;
 	public static int MAXM = 20001;
-	public static int MAXT = 1000001;
-	public static int MAXE = 2000001;
+	public static int MAXT = 2000001;
+	public static int MAXE = 5000001;
 	public static int n, m, cntt;
 	public static int[] v = new int[MAXN];
 	public static int[] x = new int[MAXM];
@@ -39,11 +39,14 @@ public class Code06_PartitionRepeatableSet1 {
 	public static int[] belong = new int[MAXT];
 	public static int sccCnt;
 
-	public static int[] outTree1 = new int[MAXN];
-	public static int[] inTree1 = new int[MAXN];
-
-	public static int[] outTree2 = new int[MAXN];
-	public static int[] inTree2 = new int[MAXN];
+	// 主席树
+	public static int[] rootOut1 = new int[MAXN];
+	public static int[] rootIn1 = new int[MAXN];
+	public static int[] rootOut2 = new int[MAXN];
+	public static int[] rootIn2 = new int[MAXN];
+	public static int[] ls = new int[MAXT];
+	public static int[] rs = new int[MAXT];
+	public static int curVersion;
 
 	// 迭代版需要的栈，讲解118讲了递归改迭代的技巧
 	public static int[] stau = new int[MAXT];
@@ -169,57 +172,127 @@ public class Code06_PartitionRepeatableSet1 {
 		}
 	}
 
+	public static int buildOut(int l, int r) {
+		int rt = ++cntt;
+		if (l < r) {
+			int mid = (l + r) >> 1;
+			ls[rt] = buildOut(l, mid);
+			rs[rt] = buildOut(mid + 1, r);
+			addEdge(ls[rt], rt);
+			addEdge(rs[rt], rt);
+		}
+		return rt;
+	}
+
+	public static int buildIn(int l, int r) {
+		int rt = ++cntt;
+		if (l < r) {
+			int mid = (l + r) >> 1;
+			ls[rt] = buildIn(l, mid);
+			rs[rt] = buildIn(mid + 1, r);
+			addEdge(rt, ls[rt]);
+			addEdge(rt, rs[rt]);
+		}
+		return rt;
+	}
+
+	public static int addOut(int jobx, int jobv, int l, int r, int i) {
+		int rt = ++cntt;
+		ls[rt] = ls[i];
+		rs[rt] = rs[i];
+		addEdge(i, rt);
+		if (l == r) {
+			addEdge(jobx, rt);
+		} else {
+			int mid = (l + r) >> 1;
+			if (jobv <= mid) {
+				ls[rt] = addOut(jobx, jobv, l, mid, ls[rt]);
+				addEdge(ls[rt], rt);
+			} else {
+				rs[rt] = addOut(jobx, jobv, mid + 1, r, rs[rt]);
+				addEdge(rs[rt], rt);
+			}
+		}
+		return rt;
+	}
+
+	public static int addIn(int jobx, int jobv, int l, int r, int i) {
+		int rt = ++cntt;
+		ls[rt] = ls[i];
+		rs[rt] = rs[i];
+		addEdge(rt, i);
+		if (l == r) {
+			addEdge(rt, jobx);
+		} else {
+			int mid = (l + r) >> 1;
+			if (jobv <= mid) {
+				ls[rt] = addIn(jobx, jobv, l, mid, ls[rt]);
+				addEdge(rt, ls[rt]);
+			} else {
+				rs[rt] = addIn(jobx, jobv, mid + 1, r, rs[rt]);
+				addEdge(rt, rs[rt]);
+			}
+		}
+		return rt;
+	}
+
+	public static void rangeToX(int jobl, int jobr, int jobx, int l, int r, int i) {
+		if (jobl <= l && r <= jobr) {
+			addEdge(i, jobx);
+		} else {
+			int mid = (l + r) >> 1;
+			if (jobl <= mid) {
+				rangeToX(jobl, jobr, jobx, l, mid, ls[i]);
+			}
+			if (jobr > mid) {
+				rangeToX(jobl, jobr, jobx, mid + 1, r, rs[i]);
+			}
+		}
+	}
+
+	public static void xToRange(int jobx, int jobl, int jobr, int l, int r, int i) {
+		if (jobl <= l && r <= jobr) {
+			addEdge(jobx, i);
+		} else {
+			int mid = (l + r) >> 1;
+			if (jobl <= mid) {
+				xToRange(jobx, jobl, jobr, l, mid, ls[i]);
+			}
+			if (jobr > mid) {
+				xToRange(jobx, jobl, jobr, mid + 1, r, rs[i]);
+			}
+		}
+	}
+
+	public static void add(int x, int otherx, int si, int bi) {
+		curVersion++;
+		rootOut1[curVersion] = addOut(x, si, 1, n, rootOut1[curVersion - 1]);
+		rootIn1[curVersion] = addIn(otherx, si, 1, n, rootIn1[curVersion - 1]);
+		rootOut2[curVersion] = addOut(otherx, bi, 1, n, rootOut2[curVersion - 1]);
+		rootIn2[curVersion] = addIn(x, bi, 1, n, rootIn2[curVersion - 1]);
+	}
+
+	public static void link(int x, int otherx, int lowCnt, int hightCnt) {
+		if (lowCnt > 0) {
+			xToRange(x, 1, lowCnt, 1, n, rootIn1[curVersion]);
+			rangeToX(1, lowCnt, otherx, 1, n, rootOut1[curVersion]);
+		}
+		if (hightCnt > 0) {
+			xToRange(otherx, 1, hightCnt, 1, n, rootIn2[curVersion]);
+			rangeToX(1, hightCnt, x, 1, n, rootOut2[curVersion]);
+		}
+	}
+
 	public static int other(int x) {
 		return x <= n ? x + n : x - n;
 	}
 
-	public static int lowbit(int i) {
-		return i & -i;
-	}
-
-	public static void addOut(int[] outTree, int i, int x) {
-		while (i <= n) {
-			int preo = outTree[i];
-			int curo = ++cntt;
-			if (preo > 0) {
-				addEdge(preo, curo);
-			}
-			addEdge(x, curo);
-			outTree[i] = curo;
-			i += lowbit(i);
-		}
-	}
-
-	public static void addIn(int[] inTree, int i, int x) {
-		while (i <= n) {
-			int prei = inTree[i];
-			int curi = ++cntt;
-			if (prei > 0) {
-				addEdge(curi, prei);
-			}
-			addEdge(curi, x);
-			inTree[i] = curi;
-			i += lowbit(i);
-		}
-	}
-
-	public static void add(int[] outTree, int[] inTree, int i, int x) {
-		addOut(outTree, i, x);
-		addIn(inTree, i, other(x));
-	}
-
-	public static void xToRange(int[] outTree, int[] inTree, int i, int x) {
-		while (i > 0) {
-			if (inTree[i] > 0) {
-				addEdge(x, inTree[i]);
-				addEdge(outTree[i], other(x));
-			}
-			i -= lowbit(i);
-		}
-	}
-
 	public static void buildGraph(int k) {
 		cntt = n << 1;
+		rootOut1[0] = buildOut(1, n);
+		rootIn1[0] = buildIn(1, n);
+		rootOut2[0] = buildOut(1, n);
+		rootIn2[0] = buildIn(1, n);
 		for (int i = 1; i <= m; i++) {
 			addEdge(x[i], other(y[i]));
 			addEdge(y[i], other(x[i]));
@@ -227,10 +300,8 @@ public class Code06_PartitionRepeatableSet1 {
 			addEdge(other(y[i]), x[i]);
 		}
 		for (int i = 1; i <= n; i++) {
-			xToRange(outTree1, inTree1, small(v[i] - k), i);
-			xToRange(outTree2, inTree2, big(v[i] + k), other(i));
-			add(outTree1, inTree1, rak[i], i);
-			add(outTree2, inTree2, n - rak[i] + 1, other(i));
+			link(i, other(i), small(v[i] - k), big(v[i] + k));
+			add(i, other(i), rak[i], n - rak[i] + 1);
 		}
 	}
 
@@ -238,10 +309,7 @@ public class Code06_PartitionRepeatableSet1 {
 		for (int i = 1; i <= cntt; i++) {
 			head[i] = dfn[i] = belong[i] = 0;
 		}
-		for (int i = 1; i <= n; i++) {
-			inTree1[i] = outTree1[i] = inTree2[i] = outTree2[i] = 0;
-		}
-		cntt = cntg = cntd = top = sccCnt = 0;
+		cntt = cntg = cntd = top = sccCnt = curVersion = 0;
 	}
 
 	public static boolean check(int k) {
