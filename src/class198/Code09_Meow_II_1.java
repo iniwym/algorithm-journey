@@ -1,6 +1,6 @@
 package class198;
 
-// 喵了个喵 II，cdq分治优化建图，java版
+// 喵了个喵 II，cdq优化建图，java版
 // 测试链接 : https://www.luogu.com.cn/problem/P9139
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
@@ -37,7 +37,7 @@ public class Code09_Meow_II_1 {
 	public static int[] belong = new int[MAXT];
 	public static int sccCnt;
 
-	// cdq分治
+	// cdq
 	public static int[] arr = new int[MAXN];
 	public static int[] tmp = new int[MAXN];
 
