@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 public class Code05_Boolean1 {
 
 	public static int MAXN = 200001;
-	public static int MAXM = 600002;
+	public static int MAXM = 600001;
 	public static int MAXQ = 1000001;
 	public static int MAXP = 20;
 	public static int n, m, q;
@@ -28,7 +28,7 @@ public class Code05_Boolean1 {
 	public static int opsize = 0;
 
 	public static int[] first = new int[MAXM];
-	public static int[][] st = new int[MAXM][MAXP];
+	public static int[][] st = new int[MAXM + 1][MAXP];
 
 	public static int find(int i) {
 		while (i != fa[i]) {
