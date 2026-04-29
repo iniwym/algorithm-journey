@@ -1,6 +1,6 @@
 package class198;
 
-// 划分可重集，主席树优化建图，java版
+// 划分可重集，cdq优化建图，java版
 // 测试链接 : https://www.luogu.com.cn/problem/P7477
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
@@ -8,21 +8,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.Arrays;
 
-public class Code05_PartitionMultiset1 {
+public class Code04_PartitionMultiset_java_3 {
 
 	public static int MAXN = 20001;
 	public static int MAXM = 20001;
-	public static int MAXT = 2000001;
-	public static int MAXE = 5000001;
+	public static int MAXT = 1000001;
+	public static int MAXE = 2000001;
 	public static int n, m, cntt;
 	public static int[] v = new int[MAXN];
 	public static int[] x = new int[MAXM];
 	public static int[] y = new int[MAXM];
-
-	public static int[] rak = new int[MAXN];
-	public static int[][] arr = new int[MAXN][2];
 
 	public static int[] head = new int[MAXT];
 	public static int[] nxt = new int[MAXE];
@@ -39,14 +35,9 @@ public class Code05_PartitionMultiset1 {
 	public static int[] belong = new int[MAXT];
 	public static int sccCnt;
 
-	// 主席树
-	public static int[] rootOut1 = new int[MAXN];
-	public static int[] rootIn1 = new int[MAXN];
-	public static int[] rootOut2 = new int[MAXN];
-	public static int[] rootIn2 = new int[MAXN];
-	public static int[] ls = new int[MAXT];
-	public static int[] rs = new int[MAXT];
-	public static int curVersion;
+	// cdq
+	public static int[] arr = new int[MAXN];
+	public static int[] tmp = new int[MAXN];
 
 	// 迭代版需要的栈，讲解118讲了递归改迭代的技巧
 	public static int[] stau = new int[MAXT];
@@ -67,36 +58,6 @@ public class Code05_PartitionMultiset1 {
 		u = stau[stacksize];
 		status = stas[stacksize];
 		e = stae[stacksize];
-	}
-
-	// <= num的范围长度
-	public static int small(int num) {
-		int l = 1, r = n, mid, ans = 0;
-		while (l <= r) {
-			mid = (l + r) >> 1;
-			if (arr[mid][0] <= num) {
-				ans = mid;
-				l = mid + 1;
-			} else {
-				r = mid - 1;
-			}
-		}
-		return ans;
-	}
-
-	// >= num的范围长度
-	public static int big(int num) {
-		int l = 1, r = n, mid, ans = n + 1;
-		while (l <= r) {
-			mid = (l + r) >> 1;
-			if (arr[mid][0] >= num) {
-				ans = mid;
-				r = mid - 1;
-			} else {
-				l = mid + 1;
-			}
-		}
-		return n - ans + 1;
 	}
 
 	public static void addEdge(int u, int v) {
@@ -172,127 +133,78 @@ public class Code05_PartitionMultiset1 {
 		}
 	}
 
-	public static int buildOut(int l, int r) {
-		int rt = ++cntt;
-		if (l < r) {
-			int mid = (l + r) >> 1;
-			ls[rt] = buildOut(l, mid);
-			rs[rt] = buildOut(mid + 1, r);
-			addEdge(ls[rt], rt);
-			addEdge(rs[rt], rt);
-		}
-		return rt;
-	}
-
-	public static int buildIn(int l, int r) {
-		int rt = ++cntt;
-		if (l < r) {
-			int mid = (l + r) >> 1;
-			ls[rt] = buildIn(l, mid);
-			rs[rt] = buildIn(mid + 1, r);
-			addEdge(rt, ls[rt]);
-			addEdge(rt, rs[rt]);
-		}
-		return rt;
-	}
-
-	public static int addOut(int jobx, int jobv, int l, int r, int i) {
-		int rt = ++cntt;
-		ls[rt] = ls[i];
-		rs[rt] = rs[i];
-		addEdge(i, rt);
-		if (l == r) {
-			addEdge(jobx, rt);
-		} else {
-			int mid = (l + r) >> 1;
-			if (jobv <= mid) {
-				ls[rt] = addOut(jobx, jobv, l, mid, ls[rt]);
-				addEdge(ls[rt], rt);
-			} else {
-				rs[rt] = addOut(jobx, jobv, mid + 1, r, rs[rt]);
-				addEdge(rs[rt], rt);
-			}
-		}
-		return rt;
-	}
-
-	public static int addIn(int jobx, int jobv, int l, int r, int i) {
-		int rt = ++cntt;
-		ls[rt] = ls[i];
-		rs[rt] = rs[i];
-		addEdge(rt, i);
-		if (l == r) {
-			addEdge(rt, jobx);
-		} else {
-			int mid = (l + r) >> 1;
-			if (jobv <= mid) {
-				ls[rt] = addIn(jobx, jobv, l, mid, ls[rt]);
-				addEdge(rt, ls[rt]);
-			} else {
-				rs[rt] = addIn(jobx, jobv, mid + 1, r, rs[rt]);
-				addEdge(rt, rs[rt]);
-			}
-		}
-		return rt;
-	}
-
-	public static void rangeToX(int jobl, int jobr, int jobx, int l, int r, int i) {
-		if (jobl <= l && r <= jobr) {
-			addEdge(i, jobx);
-		} else {
-			int mid = (l + r) >> 1;
-			if (jobl <= mid) {
-				rangeToX(jobl, jobr, jobx, l, mid, ls[i]);
-			}
-			if (jobr > mid) {
-				rangeToX(jobl, jobr, jobx, mid + 1, r, rs[i]);
-			}
-		}
-	}
-
-	public static void xToRange(int jobx, int jobl, int jobr, int l, int r, int i) {
-		if (jobl <= l && r <= jobr) {
-			addEdge(jobx, i);
-		} else {
-			int mid = (l + r) >> 1;
-			if (jobl <= mid) {
-				xToRange(jobx, jobl, jobr, l, mid, ls[i]);
-			}
-			if (jobr > mid) {
-				xToRange(jobx, jobl, jobr, mid + 1, r, rs[i]);
-			}
-		}
-	}
-
-	public static void add(int x, int otherx, int si, int bi) {
-		curVersion++;
-		rootOut1[curVersion] = addOut(x, si, 1, n, rootOut1[curVersion - 1]);
-		rootIn1[curVersion] = addIn(otherx, si, 1, n, rootIn1[curVersion - 1]);
-		rootOut2[curVersion] = addOut(otherx, bi, 1, n, rootOut2[curVersion - 1]);
-		rootIn2[curVersion] = addIn(x, bi, 1, n, rootIn2[curVersion - 1]);
-	}
-
-	public static void link(int x, int otherx, int lowCnt, int hightCnt) {
-		if (lowCnt > 0) {
-			xToRange(x, 1, lowCnt, 1, n, rootIn1[curVersion]);
-			rangeToX(1, lowCnt, otherx, 1, n, rootOut1[curVersion]);
-		}
-		if (hightCnt > 0) {
-			xToRange(otherx, 1, hightCnt, 1, n, rootIn2[curVersion]);
-			rangeToX(1, hightCnt, x, 1, n, rootOut2[curVersion]);
-		}
-	}
-
 	public static int other(int x) {
 		return x <= n ? x + n : x - n;
 	}
 
+	public static void merge(int l, int mid, int r, int k) {
+		int preOut = 0, curOut = 0, preIn = 0, curIn = 0;
+		for (int p1 = l - 1, p2 = mid + 1; p2 <= r; p2++) {
+			curOut = ++cntt;
+			curIn = ++cntt;
+			while (p1 + 1 <= mid && v[arr[p1 + 1]] <= v[arr[p2]] - k) {
+				p1++;
+				addEdge(arr[p1], curOut);
+				addEdge(curIn, other(arr[p1]));
+			}
+			if (preOut > 0) {
+				addEdge(preOut, curOut);
+				addEdge(curIn, preIn);
+			}
+			addEdge(curOut, other(arr[p2]));
+			addEdge(arr[p2], curIn);
+			preOut = curOut;
+			preIn = curIn;
+		}
+		preOut = curOut = preIn = curIn = 0;
+		for (int p1 = mid + 1, p2 = r; p2 >= mid + 1; p2--) {
+			curOut = ++cntt;
+			curIn = ++cntt;
+			while (p1 - 1 >= l && v[arr[p1 - 1]] >= v[arr[p2]] + k) {
+				p1--;
+				addEdge(other(arr[p1]), curOut);
+				addEdge(curIn, arr[p1]);
+			}
+			if (preOut > 0) {
+				addEdge(preOut, curOut);
+				addEdge(curIn, preIn);
+			}
+			addEdge(curOut, arr[p2]);
+			addEdge(other(arr[p2]), curIn);
+			preOut = curOut;
+			preIn = curIn;
+		}
+		int p1 = l, p2 = mid + 1, tsiz = 0;
+		while (p1 <= mid && p2 <= r) {
+			if (v[arr[p1]] <= v[arr[p2]]) {
+				tmp[++tsiz] = arr[p1++];
+			} else {
+				tmp[++tsiz] = arr[p2++];
+			}
+		}
+		while (p1 <= mid) {
+			tmp[++tsiz] = arr[p1++];
+		}
+		while (p2 <= r) {
+			tmp[++tsiz] = arr[p2++];
+		}
+		for (int i = l, j = 1; i <= r; i++, j++) {
+			arr[i] = tmp[j];
+		}
+	}
+
+	public static void cdq(int l, int r, int k) {
+		if (l == r) {
+			return;
+		}
+		int mid = (l + r) / 2;
+		cdq(l, mid, k);
+		cdq(mid + 1, r, k);
+		merge(l, mid, r, k);
+	}
+
 	public static void buildGraph(int k) {
 		cntt = n << 1;
-		rootOut1[0] = buildOut(1, n);
-		rootIn1[0] = buildIn(1, n);
-		rootOut2[0] = buildOut(1, n);
-		rootIn2[0] = buildIn(1, n);
 		for (int i = 1; i <= m; i++) {
 			addEdge(x[i], other(y[i]));
 			addEdge(y[i], other(x[i]));
@@ -300,16 +212,16 @@ public class Code05_PartitionMultiset1 {
 			addEdge(other(y[i]), x[i]);
 		}
 		for (int i = 1; i <= n; i++) {
-			link(i, other(i), small(v[i] - k), big(v[i] + k));
-			add(i, other(i), rak[i], n - rak[i] + 1);
+			arr[i] = i;
 		}
+		cdq(1, n, k);
 	}
 
 	public static void clear() {
 		for (int i = 1; i <= cntt; i++) {
 			head[i] = dfn[i] = belong[i] = 0;
 		}
-		cntt = cntg = cntd = top = sccCnt = curVersion = 0;
+		cntt = cntg = cntd = top = sccCnt = 0;
 	}
 
 	public static boolean check(int k) {
@@ -332,15 +244,12 @@ public class Code05_PartitionMultiset1 {
 	}
 
 	public static int compute() {
-		for (int i = 1; i <= n; i++) {
-			arr[i][0] = v[i];
-			arr[i][1] = i;
+		int minv = v[1], maxv = v[1];
+		for (int i = 2; i <= n; i++) {
+			minv = Math.min(minv, v[i]);
+			maxv = Math.max(maxv, v[i]);
 		}
-		Arrays.sort(arr, 1, n + 1, (a, b) -> a[0] != b[0] ? a[0] - b[0] : a[1] - b[1]);
-		for (int i = 1; i <= n; i++) {
-			rak[arr[i][1]] = i;
-		}
-		int l = 0, r = arr[n][0] - arr[1][0], mid, ans = -1;
+		int l = 0, r = maxv - minv, mid, ans = -1;
 		while (l <= r) {
 			mid = (l + r) >> 1;
 			if (check(mid)) {

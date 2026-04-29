@@ -1,6 +1,6 @@
 package class198;
 
-// 喵了个喵 II，cdq优化建图，java版
+// 喵了个喵 II，主席树优化建图，java版
 // 测试链接 : https://www.luogu.com.cn/problem/P9139
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
@@ -10,12 +10,12 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Code09_Meow_II_1 {
+public class Code05_Meow_II_java_2 {
 
 	public static int MAXV = 50001;
 	public static int MAXN = 200001;
-	public static int MAXT = 5000001;
-	public static int MAXE = 20000001;
+	public static int MAXT = 10000001;
+	public static int MAXE = 50000001;
 	public static int v, n, cntt;
 
 	public static int[][] vi = new int[MAXN][2];
@@ -37,9 +37,11 @@ public class Code09_Meow_II_1 {
 	public static int[] belong = new int[MAXT];
 	public static int sccCnt;
 
-	// cdq
-	public static int[] arr = new int[MAXN];
-	public static int[] tmp = new int[MAXN];
+	// 主席树
+	public static int[] rootOut = new int[MAXN];
+	public static int[] rootIn = new int[MAXN];
+	public static int[] ls = new int[MAXT];
+	public static int[] rs = new int[MAXT];
 
 	public static int[] ans = new int[MAXN];
 
@@ -143,65 +145,116 @@ public class Code09_Meow_II_1 {
 		}
 	}
 
+	public static int buildOut(int l, int r) {
+		int rt = ++cntt;
+		if (l < r) {
+			int mid = (l + r) >> 1;
+			ls[rt] = buildOut(l, mid);
+			rs[rt] = buildOut(mid + 1, r);
+			addEdge(ls[rt], rt);
+			addEdge(rs[rt], rt);
+		}
+		return rt;
+	}
+
+	public static int buildIn(int l, int r) {
+		int rt = ++cntt;
+		if (l < r) {
+			int mid = (l + r) >> 1;
+			ls[rt] = buildIn(l, mid);
+			rs[rt] = buildIn(mid + 1, r);
+			addEdge(rt, ls[rt]);
+			addEdge(rt, rs[rt]);
+		}
+		return rt;
+	}
+
+	public static int addOut(int jobi, int jobx, int l, int r, int i) {
+		int rt = ++cntt;
+		ls[rt] = ls[i];
+		rs[rt] = rs[i];
+		addEdge(i, rt);
+		if (l == r) {
+			addEdge(jobx, rt);
+		} else {
+			int mid = (l + r) >> 1;
+			if (jobi <= mid) {
+				ls[rt] = addOut(jobi, jobx, l, mid, ls[rt]);
+				addEdge(ls[rt], rt);
+			} else {
+				rs[rt] = addOut(jobi, jobx, mid + 1, r, rs[rt]);
+				addEdge(rs[rt], rt);
+			}
+		}
+		return rt;
+	}
+
+	public static int addIn(int jobi, int jobx, int l, int r, int i) {
+		int rt = ++cntt;
+		ls[rt] = ls[i];
+		rs[rt] = rs[i];
+		addEdge(rt, i);
+		if (l == r) {
+			addEdge(rt, jobx);
+		} else {
+			int mid = (l + r) >> 1;
+			if (jobi <= mid) {
+				ls[rt] = addIn(jobi, jobx, l, mid, ls[rt]);
+				addEdge(rt, ls[rt]);
+			} else {
+				rs[rt] = addIn(jobi, jobx, mid + 1, r, rs[rt]);
+				addEdge(rt, rs[rt]);
+			}
+		}
+		return rt;
+	}
+
+	public static void xToRange(int jobx, int jobl, int jobr, int l, int r, int i) {
+		if (jobl <= l && r <= jobr) {
+			addEdge(jobx, i);
+		} else {
+			int mid = (l + r) >> 1;
+			if (jobl <= mid) {
+				xToRange(jobx, jobl, jobr, l, mid, ls[i]);
+			}
+			if (jobr > mid) {
+				xToRange(jobx, jobl, jobr, mid + 1, r, rs[i]);
+			}
+		}
+	}
+
+	public static void rangeToX(int jobl, int jobr, int jobx, int l, int r, int i) {
+		if (jobl <= l && r <= jobr) {
+			addEdge(i, jobx);
+		} else {
+			int mid = (l + r) >> 1;
+			if (jobl <= mid) {
+				rangeToX(jobl, jobr, jobx, l, mid, ls[i]);
+			}
+			if (jobr > mid) {
+				rangeToX(jobl, jobr, jobx, mid + 1, r, rs[i]);
+			}
+		}
+	}
+
 	public static int other(int x) {
 		return x <= v ? x + v : x - v;
-	}
-
-	public static void merge(int l, int mid, int r) {
-		int preOut = 0, curOut = 0, preIn = 0, curIn = 0;
-		for (int p1 = mid + 1, p2 = r; p2 >= mid + 1; p2--) {
-			curOut = ++cntt;
-			curIn = ++cntt;
-			while (p1 - 1 >= l && group[arr[p1 - 1]][0] >= group[arr[p2]][0]) {
-				p1--;
-				addEdge(group[arr[p1]][2], curOut);
-				addEdge(curIn, other(group[arr[p1]][2]));
-			}
-			if (preOut > 0) {
-				addEdge(preOut, curOut);
-				addEdge(curIn, preIn);
-			}
-			addEdge(curOut, other(group[arr[p2]][2]));
-			addEdge(group[arr[p2]][2], curIn);
-			preOut = curOut;
-			preIn = curIn;
-		}
-		int p1 = l, p2 = mid + 1, tsiz = 0;
-		while (p1 <= mid && p2 <= r) {
-			if (group[arr[p1]][0] <= group[arr[p2]][0]) {
-				tmp[++tsiz] = arr[p1++];
-			} else {
-				tmp[++tsiz] = arr[p2++];
-			}
-		}
-		while (p1 <= mid) {
-			tmp[++tsiz] = arr[p1++];
-		}
-		while (p2 <= r) {
-			tmp[++tsiz] = arr[p2++];
-		}
-		for (int i = l, j = 1; i <= r; i++, j++) {
-			arr[i] = tmp[j];
-		}
-	}
-
-	public static void cdq(int l, int r) {
-		if (l == r) {
-			return;
-		}
-		int mid = (l + r) / 2;
-		cdq(l, mid);
-		cdq(mid + 1, r);
-		merge(l, mid, r);
 	}
 
 	public static void buildGraph() {
 		Arrays.sort(group, 1, cntp + 1, (a, b) -> a[1] - b[1]);
 		cntt = v << 1;
+		rootOut[0] = buildOut(1, n);
+		rootIn[0] = buildIn(1, n);
 		for (int i = 1; i <= cntp; i++) {
-			arr[i] = i;
+			int l = group[i][0];
+			int r = group[i][1];
+			int x = group[i][2];
+			xToRange(x, l, r, 1, n, rootIn[i - 1]);
+			rangeToX(l, r, other(x), 1, n, rootOut[i - 1]);
+			rootIn[i] = addIn(l, other(x), 1, n, rootIn[i - 1]);
+			rootOut[i] = addOut(l, x, 1, n, rootOut[i - 1]);
 		}
-		cdq(1, cntp);
 	}
 
 	public static boolean compute() {

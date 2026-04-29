@@ -1,6 +1,6 @@
 package class198;
 
-// 喵了个喵 II，主席树优化建图，java版
+// 喵了个喵 II，树状数组优化建图，java版
 // 测试链接 : https://www.luogu.com.cn/problem/P9139
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
@@ -10,15 +10,17 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-public class Code08_Meow_II_1 {
+public class Code05_Meow_II_java_1 {
 
 	public static int MAXV = 50001;
 	public static int MAXN = 200001;
-	public static int MAXT = 10000001;
-	public static int MAXE = 50000001;
+	public static int MAXT = 5000001;
+	public static int MAXE = 20000001;
 	public static int v, n, cntt;
 
+	// 值v、位置i
 	public static int[][] vi = new int[MAXN][2];
+	// 左l、右r、决定编号x
 	public static int[][] group = new int[MAXN][3];
 	public static int cntp;
 
@@ -37,11 +39,9 @@ public class Code08_Meow_II_1 {
 	public static int[] belong = new int[MAXT];
 	public static int sccCnt;
 
-	// 主席树
-	public static int[] rootOut = new int[MAXN];
-	public static int[] rootIn = new int[MAXN];
-	public static int[] ls = new int[MAXT];
-	public static int[] rs = new int[MAXT];
+	// 树状数组
+	public static int[] inTree = new int[MAXN];
+	public static int[] outTree = new int[MAXN];
 
 	public static int[] ans = new int[MAXN];
 
@@ -145,95 +145,51 @@ public class Code08_Meow_II_1 {
 		}
 	}
 
-	public static int buildOut(int l, int r) {
-		int rt = ++cntt;
-		if (l < r) {
-			int mid = (l + r) >> 1;
-			ls[rt] = buildOut(l, mid);
-			rs[rt] = buildOut(mid + 1, r);
-			addEdge(ls[rt], rt);
-			addEdge(rs[rt], rt);
-		}
-		return rt;
+	public static int lowbit(int i) {
+		return i & -i;
 	}
 
-	public static int buildIn(int l, int r) {
-		int rt = ++cntt;
-		if (l < r) {
-			int mid = (l + r) >> 1;
-			ls[rt] = buildIn(l, mid);
-			rs[rt] = buildIn(mid + 1, r);
-			addEdge(rt, ls[rt]);
-			addEdge(rt, rs[rt]);
-		}
-		return rt;
-	}
-
-	public static int addOut(int jobi, int jobx, int l, int r, int i) {
-		int rt = ++cntt;
-		ls[rt] = ls[i];
-		rs[rt] = rs[i];
-		addEdge(i, rt);
-		if (l == r) {
-			addEdge(jobx, rt);
-		} else {
-			int mid = (l + r) >> 1;
-			if (jobi <= mid) {
-				ls[rt] = addOut(jobi, jobx, l, mid, ls[rt]);
-				addEdge(ls[rt], rt);
-			} else {
-				rs[rt] = addOut(jobi, jobx, mid + 1, r, rs[rt]);
-				addEdge(rs[rt], rt);
+	public static void addOut(int i, int x) {
+		while (i <= n) {
+			int preo = outTree[i];
+			int curo = ++cntt;
+			if (preo > 0) {
+				addEdge(preo, curo);
 			}
-		}
-		return rt;
-	}
-
-	public static int addIn(int jobi, int jobx, int l, int r, int i) {
-		int rt = ++cntt;
-		ls[rt] = ls[i];
-		rs[rt] = rs[i];
-		addEdge(rt, i);
-		if (l == r) {
-			addEdge(rt, jobx);
-		} else {
-			int mid = (l + r) >> 1;
-			if (jobi <= mid) {
-				ls[rt] = addIn(jobi, jobx, l, mid, ls[rt]);
-				addEdge(rt, ls[rt]);
-			} else {
-				rs[rt] = addIn(jobi, jobx, mid + 1, r, rs[rt]);
-				addEdge(rt, rs[rt]);
-			}
-		}
-		return rt;
-	}
-
-	public static void xToRange(int jobx, int jobl, int jobr, int l, int r, int i) {
-		if (jobl <= l && r <= jobr) {
-			addEdge(jobx, i);
-		} else {
-			int mid = (l + r) >> 1;
-			if (jobl <= mid) {
-				xToRange(jobx, jobl, jobr, l, mid, ls[i]);
-			}
-			if (jobr > mid) {
-				xToRange(jobx, jobl, jobr, mid + 1, r, rs[i]);
-			}
+			addEdge(x, curo);
+			outTree[i] = curo;
+			i += lowbit(i);
 		}
 	}
 
-	public static void rangeToX(int jobl, int jobr, int jobx, int l, int r, int i) {
-		if (jobl <= l && r <= jobr) {
-			addEdge(i, jobx);
-		} else {
-			int mid = (l + r) >> 1;
-			if (jobl <= mid) {
-				rangeToX(jobl, jobr, jobx, l, mid, ls[i]);
+	public static void addIn(int i, int x) {
+		while (i <= n) {
+			int prei = inTree[i];
+			int curi = ++cntt;
+			if (prei > 0) {
+				addEdge(curi, prei);
 			}
-			if (jobr > mid) {
-				rangeToX(jobl, jobr, jobx, mid + 1, r, rs[i]);
+			addEdge(curi, x);
+			inTree[i] = curi;
+			i += lowbit(i);
+		}
+	}
+
+	public static void rangeToX(int i, int x) {
+		while (i > 0) {
+			if (outTree[i] > 0) {
+				addEdge(outTree[i], x);
 			}
+			i -= lowbit(i);
+		}
+	}
+
+	public static void xToRange(int x, int i) {
+		while (i > 0) {
+			if (inTree[i] > 0) {
+				addEdge(x, inTree[i]);
+			}
+			i -= lowbit(i);
 		}
 	}
 
@@ -244,16 +200,15 @@ public class Code08_Meow_II_1 {
 	public static void buildGraph() {
 		Arrays.sort(group, 1, cntp + 1, (a, b) -> a[1] - b[1]);
 		cntt = v << 1;
-		rootOut[0] = buildOut(1, n);
-		rootIn[0] = buildIn(1, n);
 		for (int i = 1; i <= cntp; i++) {
 			int l = group[i][0];
-			int r = group[i][1];
+			// 后缀查询转化成前缀查询
+			int p = n - l + 1;
 			int x = group[i][2];
-			xToRange(x, l, r, 1, n, rootIn[i - 1]);
-			rangeToX(l, r, other(x), 1, n, rootOut[i - 1]);
-			rootIn[i] = addIn(l, other(x), 1, n, rootIn[i - 1]);
-			rootOut[i] = addOut(l, x, 1, n, rootOut[i - 1]);
+			xToRange(x, p);
+			rangeToX(p, other(x));
+			addIn(p, other(x));
+			addOut(p, x);
 		}
 	}
 
