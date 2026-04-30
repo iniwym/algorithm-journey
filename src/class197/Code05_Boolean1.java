@@ -1,6 +1,16 @@
 package class197;
 
 // 布尔，java版
+// 一共n个变量，取值为0或1，一共m条限制，格式 u x v y，含义如下
+// 如果u的取值为x，则v的取值为y，同时如果v的取值为y，则u的取值为x
+// 限制的编号范围1~m，限制区间[a, b]如果满足如下条件，就认为是合法的
+// 区间[a, b]内的所有限制，存在一种变量赋值方案，能让它们全部成立
+// 一共有q条查询，格式 l r，含义如下
+// 整个限制区间[l, r]，最少划分成多少段连续区间，使得每个连续区间都合法
+// 打印划分的连续区间数量，如果怎么划分都做不到上述要求，打印-1
+// 1 <= n <= 10^5
+// 1 <= m <= 6 * 10^5
+// 1 <= q <= 10^6
 // 测试链接 : https://www.luogu.com.cn/problem/P7843
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
@@ -17,15 +27,14 @@ public class Code05_Boolean1 {
 	public static int MAXP = 20;
 	public static int n, m, q;
 
-	public static int[] mistake = new int[MAXM];
+	public static int[] error = new int[MAXM];
 	public static int[] u = new int[MAXM];
 	public static int[] v = new int[MAXM];
 
 	public static int[] fa = new int[MAXN];
 	public static int[] siz = new int[MAXN];
-	public static int[] backx = new int[MAXN];
-	public static int[] backy = new int[MAXN];
-	public static int opsize = 0;
+	public static int[][] rollback = new int[MAXN][2];
+	public static int opsize;
 
 	public static int[] first = new int[MAXM];
 	public static int[][] st = new int[MAXM + 1][MAXP];
@@ -48,15 +57,15 @@ public class Code05_Boolean1 {
 			}
 			fa[fy] = fx;
 			siz[fx] += siz[fy];
-			backx[++opsize] = fx;
-			backy[opsize] = fy;
+			rollback[++opsize][0] = fx;
+			rollback[opsize][1] = fy;
 		}
 	}
 
 	public static void undo(int oldsiz) {
 		while (opsize > oldsiz) {
-			int fx = backx[opsize];
-			int fy = backy[opsize--];
+			int fx = rollback[opsize][0];
+			int fy = rollback[opsize--][1];
 			fa[fy] = fy;
 			siz[fx] -= siz[fy];
 		}
@@ -96,19 +105,18 @@ public class Code05_Boolean1 {
 			compute(ql, qr, vl, mid);
 		} else {
 			int backup2 = opsize;
-			int split = ql - 1;
-			for (int i = Math.min(qr, mid); i >= ql; i--) {
-				union(u[i], v[i]);
-				union(other(u[i]), other(v[i]));
-				if (conflict(u[i])) {
-					split = i;
+			int split = Math.min(qr, mid);
+			for (; split >= ql; split--) {
+				union(u[split], v[split]);
+				union(other(u[split]), other(v[split]));
+				if (conflict(u[split])) {
 					break;
 				}
 			}
 			undo(backup2);
 			compute(split + 1, qr, mid + 1, vr);
 			undo(backup1);
-			for (int i = split + 1; i <= Math.min(qr, vl - 1); i++) {
+			for (int i = split + 1; i <= qr && i < vl; i++) {
 				union(u[i], v[i]);
 				union(other(u[i]), other(v[i]));
 			}
@@ -146,18 +154,18 @@ public class Code05_Boolean1 {
 			x = in.nextInt();
 			v[i] = in.nextInt();
 			y = in.nextInt();
-			mistake[i] = u[i] == v[i] && x != y ? 1 : 0;
+			error[i] = u[i] == v[i] && x != y ? 1 : 0;
 			u[i] = x == 0 ? u[i] : (u[i] + n);
 			v[i] = y == 0 ? v[i] : (v[i] + n);
 		}
 		buildst();
 		for (int i = 1; i <= m; i++) {
-			mistake[i] += mistake[i - 1];
+			error[i] += error[i - 1];
 		}
 		for (int i = 1, l, r; i <= q; i++) {
 			l = in.nextInt();
 			r = in.nextInt();
-			if (mistake[r] - mistake[l - 1] > 0) {
+			if (error[r] - error[l - 1] > 0) {
 				out.println(-1);
 			} else {
 				int ans = 0;
