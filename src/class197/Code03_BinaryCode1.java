@@ -8,9 +8,6 @@ package class197;
 // 存在方案打印"YES"，然后打印每个确定后的字符串，不存在方案打印"NO"
 // 1 <= n、字符总数 <= 5 * 10^5
 // 测试链接 : https://www.luogu.com.cn/problem/P6965
-// 测试链接 : https://hydro.ac/p/bzoj-P4840
-// 测试链接 : https://loj.ac/p/6036
-// 第三个测试链接，只打印"YES"或"NO"，不打印每个确定后的字符串
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
 import java.io.IOException;
