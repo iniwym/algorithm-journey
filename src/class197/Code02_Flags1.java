@@ -26,7 +26,7 @@ public class Code02_Flags1 {
 	public static int[] a = new int[MAXN];
 	public static int[] b = new int[MAXN];
 
-	// 所在的位置pos、决定的编号xid
+	// 所在的地点pos、决定的编号xid
 	public static int[][] arr = new int[MAXN << 1][2];
 
 	public static int[] ls = new int[MAXT];
