@@ -176,7 +176,7 @@ public class Code02_Flags1 {
 		}
 		k = n << 1;
 		Arrays.sort(arr, 1, k + 1, (x, y) -> x[0] != y[0] ? x[0] - y[0] : x[1] - y[1]);
-		int l = 0, r = arr[k][0] - arr[1][0], d, ans = 0;
+		int l = 0, r = arr[k][0], d, ans = 0;
 		while (l <= r) {
 			d = (l + r) >> 1;
 			if (check(d)) {

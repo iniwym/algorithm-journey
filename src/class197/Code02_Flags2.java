@@ -183,7 +183,7 @@ package class197;
 //    }
 //    k = n << 1;
 //    sort(arr + 1, arr + k + 1, NodeCmp);
-//    int l = 0, r = arr[k].pos - arr[1].pos, d, ans = 0;
+//    int l = 0, r = arr[k].pos, d, ans = 0;
 //    while (l <= r) {
 //        d = (l + r) >> 1;
 //        if (check(d)) {
