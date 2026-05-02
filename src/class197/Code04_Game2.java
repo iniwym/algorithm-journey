@@ -4,8 +4,8 @@ package class197;
 // 地面有x、a、b、c四种类型，赛车有A、B、C三辆
 // 类型a不能跑车A，类型b不能跑车B、类型c不能跑车C，类型x没有限制
 // 一共有n个地点，给定每个地点的地面类型，其中x类型的地面有d个
-// 一共有m个限制，格式 p1 c1 p2 c2，含义如下
-// 如果p1号地点使用c1赛车，那么p2号地点一定要使用c2赛车
+// 一共有m个限制，格式 g1 v1 g2 v2，含义如下
+// 如果g1号地点使用v1赛车，那么g2号地点一定要使用v2赛车
 // 每辆赛车可以使用无限次，需要满足以上的规则和限制来安排比赛
 // 如果有方案，找到任意一种方案，打印每个地点用什么车，无方案打印-1
 // 1 <= n <= 5 * 10^4    1 <= m <= 10^5    0 <= d <= 8
@@ -21,10 +21,10 @@ package class197;
 //int n, d, m;
 //
 //int ground[MAXN];
-//int pos1[MAXN];
-//int car1[MAXN];
-//int pos2[MAXN];
-//int car2[MAXN];
+//int g1[MAXN];
+//int v1[MAXN];
+//int g2[MAXN];
+//int v2[MAXN];
 //
 //int posx[MAXN];
 //
@@ -93,11 +93,11 @@ package class197;
 //        }
 //    }
 //    for (int i = 1; i <= m; i++) {
-//        if (ground[pos1[i]] != car1[i]) {
-//            int y1 = pick(pos1[i], car1[i]);
+//        if (ground[g1[i]] != v1[i]) {
+//            int y1 = pick(g1[i], v1[i]);
 //            int n1 = other(y1);
-//            if (ground[pos2[i]] != car2[i]) {
-//                int y2 = pick(pos2[i], car2[i]);
+//            if (ground[g2[i]] != v2[i]) {
+//                int y2 = pick(g2[i], v2[i]);
 //                int n2 = other(y2);
 //                addEdge(y1, y2);
 //                addEdge(n2, n1);
@@ -131,7 +131,7 @@ package class197;
 //            posx[++sizx] = i;
 //        }
 //    }
-//    for (int xstatus = 0; xstatus < (1 << d); xstatus++) {
+//    for (int xstatus = 0; xstatus < 1 << d; xstatus++) {
 //        buildGraph(xstatus);
 //        for (int i = 1; i <= (n << 1); i++) {
 //            if (dfn[i] == 0) {
@@ -179,10 +179,10 @@ package class197;
 //    }
 //    cin >> m;
 //    for (int i = 1; i <= m; i++) {
-//        cin >> pos1[i] >> cha;
-//        car1[i] = getType(cha);
-//        cin >> pos2[i] >> cha;
-//        car2[i] = getType(cha);
+//        cin >> g1[i] >> cha;
+//        v1[i] = getType(cha);
+//        cin >> g2[i] >> cha;
+//        v2[i] = getType(cha);
 //    }
 //    bool check = compute();
 //    if (check) {

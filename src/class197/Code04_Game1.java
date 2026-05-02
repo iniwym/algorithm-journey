@@ -4,8 +4,8 @@ package class197;
 // 地面有x、a、b、c四种类型，赛车有A、B、C三辆
 // 类型a不能跑车A，类型b不能跑车B、类型c不能跑车C，类型x没有限制
 // 一共有n个地点，给定每个地点的地面类型，其中x类型的地面有d个
-// 一共有m个限制，格式 p1 c1 p2 c2，含义如下
-// 如果p1号地点使用c1赛车，那么p2号地点一定要使用c2赛车
+// 一共有m个限制，格式 g1 v1 g2 v2，含义如下
+// 如果g1号地点使用v1赛车，那么g2号地点一定要使用v2赛车
 // 每辆赛车可以使用无限次，需要满足以上的规则和限制来安排比赛
 // 如果有方案，找到任意一种方案，打印每个地点用什么车，无方案打印-1
 // 1 <= n <= 5 * 10^4    1 <= m <= 10^5    0 <= d <= 8
@@ -23,10 +23,10 @@ public class Code04_Game1 {
 	public static int n, d, m;
 
 	public static int[] ground = new int[MAXN];
-	public static int[] pos1 = new int[MAXN];
-	public static int[] car1 = new int[MAXN];
-	public static int[] pos2 = new int[MAXN];
-	public static int[] car2 = new int[MAXN];
+	public static int[] g1 = new int[MAXN];
+	public static int[] v1 = new int[MAXN];
+	public static int[] g2 = new int[MAXN];
+	public static int[] v2 = new int[MAXN];
 
 	public static int[] posx = new int[MAXN];
 
@@ -159,11 +159,11 @@ public class Code04_Game1 {
 			}
 		}
 		for (int i = 1; i <= m; i++) {
-			if (ground[pos1[i]] != car1[i]) {
-				int y1 = pick(pos1[i], car1[i]);
+			if (ground[g1[i]] != v1[i]) {
+				int y1 = pick(g1[i], v1[i]);
 				int n1 = other(y1);
-				if (ground[pos2[i]] != car2[i]) {
-					int y2 = pick(pos2[i], car2[i]);
+				if (ground[g2[i]] != v2[i]) {
+					int y2 = pick(g2[i], v2[i]);
 					int n2 = other(y2);
 					addEdge(y1, y2);
 					addEdge(n2, n1);
@@ -247,12 +247,12 @@ public class Code04_Game1 {
 		}
 		m = in.nextInt();
 		for (int i = 1; i <= m; i++) {
-			pos1[i] = in.nextInt();
+			g1[i] = in.nextInt();
 			cha = in.nextChar();
-			car1[i] = getType(cha);
-			pos2[i] = in.nextInt();
+			v1[i] = getType(cha);
+			g2[i] = in.nextInt();
 			cha = in.nextChar();
-			car2[i] = getType(cha);
+			v2[i] = getType(cha);
 		}
 		boolean check = compute();
 		if (check) {
