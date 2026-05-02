@@ -21,24 +21,23 @@ package class197;
 //const int MAXE = 10000001;
 //int n, cntt;
 //
-//string arrs[MAXN];
-//int pending[MAXN];
+//string arr[MAXN << 1];
 //
 //int headg[MAXT];
 //int nextg[MAXE];
 //int tog[MAXE];
 //int cntg;
 //
-//int headx[MAXP];
-//int nextx[MAXP];
-//int tox[MAXP];
-//int cntx;
-//
 //int tree[MAXP][2];
 //int fa[MAXP];
 //int up[MAXP];
 //int down[MAXP];
 //int cntp;
+//
+//int headx[MAXP];
+//int nextx[MAXP];
+//int tox[MAXP];
+//int cntx;
 //
 //int group[MAXN];
 //int gsiz;
@@ -57,12 +56,6 @@ package class197;
 //    nextg[++cntg] = headg[u];
 //    tog[cntg] = v;
 //    headg[u] = cntg;
-//}
-//
-//void addx(int u, int x) {
-//    nextx[++cntx] = headx[u];
-//    tox[cntx] = x;
-//    headx[u] = cntx;
 //}
 //
 //void tarjan(int u) {
@@ -93,35 +86,17 @@ package class197;
 //    return x <= n ? x + n : x - n;
 //}
 //
-//void findPending(int i) {
-//    string str = arrs[i];
-//    pending[i] = -1;
-//    for (int si = 0; si < (int)str.length(); si++) {
-//        if (str[si] == '?') {
-//            pending[i] = si;
-//            break;
-//        }
-//    }
-//    if (pending[i] == -1) {
-//        if (str[0] == '0') {
-//            addEdge(i + n, i);
-//        } else {
-//            addEdge(i, i + n);
-//        }
-//        pending[i] = 0;
-//    }
+//void addGroup(int u, int x) {
+//    nextx[++cntx] = headx[u];
+//    tox[cntx] = x;
+//    headx[u] = cntx;
 //}
 //
-//void insert(int i, int confirm, int x) {
-//    string str = arrs[i];
-//    int pi = pending[i];
+//void insert(int x) {
+//    string str = arr[x];
 //    int cur = 1;
-//    for (int si = 0, path; si < (int)str.length(); si++) {
-//        if (pi == si) {
-//            path = confirm;
-//        } else {
-//            path = str[si] == '0' ? 0 : 1;
-//        }
+//    for (int si = 0; si < (int)str.length(); si++) {
+//        int path = str[si] == '0' ? 0 : 1;
 //        if (tree[cur][path] == 0) {
 //            tree[cur][path] = ++cntp;
 //            fa[cntp] = cur;
@@ -136,7 +111,7 @@ package class197;
 //    addEdge(up[cur], other(x));
 //    addEdge(down[fa[cur]], other(x));
 //    addEdge(x, down[cur]);
-//    addx(cur, x);
+//    addGroup(cur, x);
 //}
 //
 //void groupLink() {
@@ -165,10 +140,8 @@ package class197;
 //    cntp = 1;
 //    up[1] = ++cntt;
 //    down[1] = ++cntt;
-//    for (int i = 1; i <= n; i++) {
-//        findPending(i);
-//        insert(i, 0, i);
-//        insert(i, 1, i + n);
+//    for (int x = 1; x <= (n << 1); x++) {
+//        insert(x);
 //    }
 //    for (int u = 1; u <= cntp; u++) {
 //        gsiz = 0;
@@ -179,12 +152,36 @@ package class197;
 //    }
 //}
 //
+//void addString(int i, string s) {
+//    int mark = -1;
+//    for (int si = 0; si < (int)s.length(); si++) {
+//        if (s[si] == '?') {
+//            mark = si;
+//            break;
+//        }
+//    }
+//    if (mark == -1) {
+//        if (s[0] == '0') {
+//            addEdge(i + n, i);
+//        } else {
+//            addEdge(i, i + n);
+//        }
+//        mark = 0;
+//    }
+//    s[mark] = '0';
+//    arr[i] = s;
+//    s[mark] = '1';
+//    arr[i + n] = s;
+//}
+//
 //int main() {
 //    ios::sync_with_stdio(false);
 //    cin.tie(nullptr);
 //    cin >> n;
+//    string s;
 //    for (int i = 1; i <= n; i++) {
-//        cin >> arrs[i];
+//        cin >> s;
+//        addString(i, s);
 //    }
 //    buildGraph();
 //    for (int i = 1; i <= (n << 1); i++) {
@@ -202,15 +199,11 @@ package class197;
 //    if (check) {
 //        cout << "YES" << "\n";
 //        for (int i = 1; i <= n; i++) {
-//            string str = arrs[i];
-//            for (int j = 0; j < (int)str.length(); j++) {
-//                if (pending[i] == j) {
-//                    cout << (belong[i] < belong[i + n] ? '0' : '1');
-//                } else {
-//                    cout << str[j];
-//                }
+//            if (belong[i] < belong[i + n]) {
+//                cout << arr[i] << "\n";
+//            } else {
+//                cout << arr[i + n] << "\n";
 //            }
-//            cout << "\n";
 //        }
 //    } else {
 //        cout << "NO" << "\n";

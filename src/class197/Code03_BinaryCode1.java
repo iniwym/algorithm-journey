@@ -23,25 +23,29 @@ public class Code03_BinaryCode1 {
 	public static int MAXE = 10000001;
 	public static int n, cntt;
 
-	public static String[] arrs = new String[MAXN];
-	public static int[] pending = new int[MAXN];
+	// 每个字符串，有两个决定，所以得到两个决定串
+	public static String[] arr = new String[MAXN << 1];
 
+	// 2-SAT建图
 	public static int[] headg = new int[MAXT];
 	public static int[] nextg = new int[MAXE];
 	public static int[] tog = new int[MAXE];
 	public static int cntg;
 
-	public static int[] headx = new int[MAXP];
-	public static int[] nextx = new int[MAXP];
-	public static int[] tox = new int[MAXP];
-	public static int cntx;
-
+	// 前缀树优化建图
 	public static int[][] tree = new int[MAXP][2];
 	public static int[] fa = new int[MAXP];
 	public static int[] up = new int[MAXP];
 	public static int[] down = new int[MAXP];
 	public static int cntp;
 
+	// 前缀树的节点x，拥有哪些决定串，用链式前向星实现
+	public static int[] headx = new int[MAXP];
+	public static int[] nextx = new int[MAXP];
+	public static int[] tox = new int[MAXP];
+	public static int cntx;
+
+	// 相同的决定串构成一组，进行前后缀优化建图
 	public static int[] group = new int[MAXN];
 	public static int gsiz;
 
@@ -80,12 +84,6 @@ public class Code03_BinaryCode1 {
 		nextg[++cntg] = headg[u];
 		tog[cntg] = v;
 		headg[u] = cntg;
-	}
-
-	public static void addx(int u, int x) {
-		nextx[++cntx] = headx[u];
-		tox[cntx] = x;
-		headx[u] = cntx;
 	}
 
 	// 递归版
@@ -159,35 +157,17 @@ public class Code03_BinaryCode1 {
 		return x <= n ? x + n : x - n;
 	}
 
-	public static void findPending(int i) {
-		String str = arrs[i];
-		pending[i] = -1;
-		for (int si = 0; si < str.length(); si++) {
-			if (str.charAt(si) == '?') {
-				pending[i] = si;
-				break;
-			}
-		}
-		if (pending[i] == -1) {
-			if (str.charAt(0) == '0') {
-				addEdge(i + n, i);
-			} else {
-				addEdge(i, i + n);
-			}
-			pending[i] = 0;
-		}
+	public static void addGroup(int u, int x) {
+		nextx[++cntx] = headx[u];
+		tox[cntx] = x;
+		headx[u] = cntx;
 	}
 
-	public static void insert(int i, int confirm, int x) {
-		String str = arrs[i];
-		int pi = pending[i];
+	public static void insert(int x) {
+		String str = arr[x];
 		int cur = 1;
-		for (int si = 0, path; si < str.length(); si++) {
-			if (pi == si) {
-				path = confirm;
-			} else {
-				path = str.charAt(si) == '0' ? 0 : 1;
-			}
+		for (int si = 0; si < str.length(); si++) {
+			int path = str.charAt(si) == '0' ? 0 : 1;
 			if (tree[cur][path] == 0) {
 				tree[cur][path] = ++cntp;
 				fa[cntp] = cur;
@@ -202,7 +182,7 @@ public class Code03_BinaryCode1 {
 		addEdge(up[cur], other(x));
 		addEdge(down[fa[cur]], other(x));
 		addEdge(x, down[cur]);
-		addx(cur, x);
+		addGroup(cur, x);
 	}
 
 	public static void groupLink() {
@@ -231,10 +211,8 @@ public class Code03_BinaryCode1 {
 		cntp = 1;
 		up[1] = ++cntt;
 		down[1] = ++cntt;
-		for (int i = 1; i <= n; i++) {
-			findPending(i);
-			insert(i, 0, i);
-			insert(i, 1, i + n);
+		for (int x = 1; x <= n << 1; x++) {
+			insert(x);
 		}
 		for (int u = 1; u <= cntp; u++) {
 			gsiz = 0;
@@ -245,12 +223,37 @@ public class Code03_BinaryCode1 {
 		}
 	}
 
+	public static void addString(int i, String s) {
+		int mark = -1;
+		char[] str = s.toCharArray();
+		for (int si = 0; si < str.length; si++) {
+			if (str[si] == '?') {
+				mark = si;
+				break;
+			}
+		}
+		if (mark == -1) {
+			if (str[0] == '0') {
+				addEdge(i + n, i);
+			} else {
+				addEdge(i, i + n);
+			}
+			mark = 0;
+		}
+		str[mark] = '0';
+		arr[i] = String.valueOf(str);
+		str[mark] = '1';
+		arr[i + n] = String.valueOf(str);
+	}
+
 	public static void main(String[] args) throws Exception {
 		FastReader in = new FastReader(System.in);
 		PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out));
 		n = in.nextInt();
+		String s;
 		for (int i = 1; i <= n; i++) {
-			arrs[i] = in.nextString();
+			s = in.nextString();
+			addString(i, s);
 		}
 		buildGraph();
 		for (int i = 1; i <= n << 1; i++) {
@@ -269,15 +272,11 @@ public class Code03_BinaryCode1 {
 		if (check) {
 			out.println("YES");
 			for (int i = 1; i <= n; i++) {
-				String str = arrs[i];
-				for (int j = 0; j < str.length(); j++) {
-					if (pending[i] == j) {
-						out.print(belong[i] < belong[i + n] ? '0' : '1');
-					} else {
-						out.print(str.charAt(j));
-					}
+				if (belong[i] < belong[i + n]) {
+					out.println(arr[i]);
+				} else {
+					out.println(arr[i + n]);
 				}
-				out.println();
 			}
 		} else {
 			out.println("NO");
