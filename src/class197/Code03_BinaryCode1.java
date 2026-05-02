@@ -180,8 +180,8 @@ public class Code03_BinaryCode1 {
 		}
 		addEdge(x, up[fa[cur]]);
 		addEdge(up[cur], other(x));
-		addEdge(down[fa[cur]], other(x));
 		addEdge(x, down[cur]);
+		addEdge(down[fa[cur]], other(x));
 		addGroup(cur, x);
 	}
 
