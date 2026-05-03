@@ -26,6 +26,7 @@ package class197;
 //int n, m, q;
 //
 //int error[MAXM];
+//
 //int u[MAXM];
 //int v[MAXM];
 //
@@ -35,6 +36,7 @@ package class197;
 //int opsize;
 //
 //int first[MAXM];
+//
 //int st[MAXM + 1][MAXP];
 //
 //int find(int i) {
@@ -44,7 +46,7 @@ package class197;
 //    return i;
 //}
 //
-//void unionn(int x, int y) {
+//void Union(int x, int y) {
 //    int fx = find(x);
 //    int fy = find(y);
 //    if (fx != fy) {
@@ -89,8 +91,8 @@ package class197;
 //    int backup1 = opsize;
 //    bool bad = false;
 //    for (int i = max(qr + 1, vl); i <= mid; i++) {
-//        unionn(u[i], v[i]);
-//        unionn(other(u[i]), other(v[i]));
+//        Union(u[i], v[i]);
+//        Union(other(u[i]), other(v[i]));
 //        if (conflict(u[i])) {
 //            bad = true;
 //            break;
@@ -103,8 +105,8 @@ package class197;
 //        int backup2 = opsize;
 //        int split = min(qr, mid);
 //        for (; split >= ql; split--) {
-//            unionn(u[split], v[split]);
-//            unionn(other(u[split]), other(v[split]));
+//            Union(u[split], v[split]);
+//            Union(other(u[split]), other(v[split]));
 //            if (conflict(u[split])) {
 //                break;
 //            }
@@ -113,8 +115,8 @@ package class197;
 //        compute(split + 1, qr, mid + 1, vr);
 //        undo(backup1);
 //        for (int i = split + 1; i <= qr && i < vl; i++) {
-//            unionn(u[i], v[i]);
-//            unionn(other(u[i]), other(v[i]));
+//            Union(u[i], v[i]);
+//            Union(other(u[i]), other(v[i]));
 //        }
 //        compute(ql, split, vl, mid);
 //    }

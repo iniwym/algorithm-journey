@@ -27,16 +27,23 @@ public class Code05_Boolean1 {
 	public static int MAXP = 20;
 	public static int n, m, q;
 
+	// 错误计数
 	public static int[] error = new int[MAXM];
+
+	// 决定编号
 	public static int[] u = new int[MAXM];
 	public static int[] v = new int[MAXM];
 
+	// 可撤销并查集
 	public static int[] fa = new int[MAXN];
 	public static int[] siz = new int[MAXN];
 	public static int[][] rollback = new int[MAXN][2];
 	public static int opsize;
 
+	// first[i] = 从i位置开始，向右不停添加限制，首次违规的位置
 	public static int[] first = new int[MAXM];
+
+	// st[i][p] = 从i位置开始，允许拆成2的p次个连续区间，每个都合法，往右能到什么位置
 	public static int[][] st = new int[MAXM + 1][MAXP];
 
 	public static int find(int i) {
@@ -79,6 +86,7 @@ public class Code05_Boolean1 {
 		return find(x) == find(other(x));
 	}
 
+	// 整体二分，计算每个位置i的first[i]信息
 	public static void compute(int ql, int qr, int vl, int vr) {
 		if (ql > qr) {
 			return;
