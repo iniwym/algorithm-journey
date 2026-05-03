@@ -4,8 +4,8 @@ package class197;
 // 地面有x、a、b、c四种类型，赛车有A、B、C三辆
 // 类型a不能跑车A，类型b不能跑车B、类型c不能跑车C，类型x没有限制
 // 一共有n个地点，给定每个地点的地面类型，其中x类型的地面有d个
-// 一共有m个限制，格式 g1 v1 g2 v2，含义如下
-// 如果g1号地点使用v1赛车，那么g2号地点一定要使用v2赛车
+// 一共有m个限制，格式 pos1 car1 pos2 car2，含义如下
+// 如果pos1号地点使用car1赛车，那么pos2号地点一定要使用car2赛车
 // 每辆赛车可以使用无限次，需要满足以上的规则和限制来安排比赛
 // 如果有方案，找到任意一种方案，打印每个地点用什么车，无方案打印-1
 // 1 <= n <= 5 * 10^4    1 <= m <= 10^5    0 <= d <= 8
@@ -22,11 +22,15 @@ public class Code04_Game1 {
 	public static int MAXN = 200001;
 	public static int n, d, m;
 
-	public static int[] ground = new int[MAXN];
-	public static int[] g1 = new int[MAXN];
-	public static int[] v1 = new int[MAXN];
-	public static int[] g2 = new int[MAXN];
-	public static int[] v2 = new int[MAXN];
+	public static char[] ban = new char[128];
+	public static char[] first = new char[128];
+	public static char[] second = new char[128];
+
+	public static char[] groundType = new char[MAXN];
+	public static int[] pos1 = new int[MAXN];
+	public static char[] car1 = new char[MAXN];
+	public static int[] pos2 = new int[MAXN];
+	public static char[] car2 = new char[MAXN];
 
 	public static int[] posx = new int[MAXN];
 
@@ -66,6 +70,18 @@ public class Code04_Game1 {
 		u = stau[stacksize];
 		status = stas[stacksize];
 		e = stae[stacksize];
+	}
+
+	public static void prepare() {
+		ban['a'] = 'A';
+		ban['b'] = 'B';
+		ban['c'] = 'C';
+		first['a'] = 'B';
+		first['b'] = 'A';
+		first['c'] = 'A';
+		second['a'] = 'C';
+		second['b'] = 'C';
+		second['c'] = 'B';
 	}
 
 	public static void addEdge(int u, int v) {
@@ -141,46 +157,35 @@ public class Code04_Game1 {
 		}
 	}
 
-	public static int pick(int i, int car) {
-		int first = ground[i] == 1 ? 2 : 1;
-		return car == first ? i : i + n;
-	}
-
 	public static int other(int i) {
 		return i <= n ? i + n : i - n;
 	}
 
-	public static void buildGraph(int xstatus) {
+	public static void buildGraph(int stax) {
 		for (int bit = 0, idx = 1; bit < d; bit++, idx++) {
-			if ((xstatus >> bit & 1) == 1) {
-				ground[posx[idx]] = 1;
+			if ((stax >> bit & 1) == 1) {
+				groundType[posx[idx]] = 'a';
 			} else {
-				ground[posx[idx]] = 2;
+				groundType[posx[idx]] = 'b';
 			}
 		}
 		for (int i = 1; i <= m; i++) {
-			if (ground[g1[i]] != v1[i]) {
-				int y1 = pick(g1[i], v1[i]);
-				int n1 = other(y1);
-				if (ground[g2[i]] != v2[i]) {
-					int y2 = pick(g2[i], v2[i]);
-					int n2 = other(y2);
-					addEdge(y1, y2);
-					addEdge(n2, n1);
+			int p1 = pos1[i];
+			char g1 = groundType[p1];
+			char c1 = car1[i];
+			if (ban[g1] != c1) {
+				int id1 = c1 == first[g1] ? p1 : p1 + n;
+				int p2 = pos2[i];
+				char g2 = groundType[p2];
+				char c2 = car2[i];
+				if (ban[g2] != c2) {
+					int id2 = c2 == first[g2] ? p2 : p2 + n;
+					addEdge(id1, id2);
+					addEdge(other(id2), other(id1));
 				} else {
-					addEdge(y1, n1);
+					addEdge(id1, other(id1));
 				}
 			}
-		}
-	}
-
-	public static char getCar(int groundType, boolean first) {
-		if (groundType == 1) {
-			return first ? 'B' : 'C';
-		} else if (groundType == 2) {
-			return first ? 'A' : 'C';
-		} else {
-			return first ? 'A' : 'B';
 		}
 	}
 
@@ -193,16 +198,23 @@ public class Code04_Game1 {
 
 	public static boolean compute() {
 		for (int i = 1, sizx = 0; i <= n; i++) {
-			if (ground[i] == 4) {
+			if (groundType[i] == 'x') {
 				posx[++sizx] = i;
 			}
 		}
-		for (int xstatus = 0; xstatus < 1 << d; xstatus++) {
-			buildGraph(xstatus);
+		for (int stax = 0; stax < 1 << d; stax++) {
+			buildGraph(stax);
 			for (int i = 1; i <= n << 1; i++) {
 				if (dfn[i] == 0) {
-					// tarjan1(i);
-					tarjan2(i);
+					if (head[i] == 0) {
+						// 孤立点直接分配强联通分量
+						// 优化一下常数，java需要，c++不需要
+						dfn[i] = low[i] = ++cntd;
+						belong[i] = ++sccCnt;
+					} else {
+						// tarjan1(i);
+						tarjan2(i);
+					}
 				}
 			}
 			boolean check = true;
@@ -214,7 +226,12 @@ public class Code04_Game1 {
 			}
 			if (check) {
 				for (int i = 1; i <= n; i++) {
-					ans[i] = getCar(ground[i], belong[i] < belong[i + n]);
+					char ground = groundType[i];
+					if (belong[i] < belong[i + n]) {
+						ans[i] = first[ground];
+					} else {
+						ans[i] = second[ground];
+					}
 				}
 				return true;
 			}
@@ -223,36 +240,21 @@ public class Code04_Game1 {
 		return false;
 	}
 
-	public static int getType(char cha) {
-		if (cha == 'A' || cha == 'a') {
-			return 1;
-		} else if (cha == 'B' || cha == 'b') {
-			return 2;
-		} else if (cha == 'C' || cha == 'c') {
-			return 3;
-		} else {
-			return 4;
-		}
-	}
-
 	public static void main(String[] args) throws Exception {
 		FastReader in = new FastReader(System.in);
 		PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out));
+		prepare();
 		n = in.nextInt();
 		d = in.nextInt();
-		char cha;
 		for (int i = 1; i <= n; i++) {
-			cha = in.nextChar();
-			ground[i] = getType(cha);
+			groundType[i] = in.nextChar();
 		}
 		m = in.nextInt();
 		for (int i = 1; i <= m; i++) {
-			g1[i] = in.nextInt();
-			cha = in.nextChar();
-			v1[i] = getType(cha);
-			g2[i] = in.nextInt();
-			cha = in.nextChar();
-			v2[i] = getType(cha);
+			pos1[i] = in.nextInt();
+			car1[i] = in.nextChar();
+			pos2[i] = in.nextInt();
+			car2[i] = in.nextChar();
 		}
 		boolean check = compute();
 		if (check) {
