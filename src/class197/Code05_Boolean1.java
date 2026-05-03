@@ -130,7 +130,6 @@ public class Code05_Boolean1 {
 			}
 			compute(ql, split, vl, mid);
 		}
-		undo(backup1);
 	}
 
 	public static void buildst() {
