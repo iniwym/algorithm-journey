@@ -107,18 +107,19 @@ package class197;
 //        int p1 = pos1[i];
 //        char g1 = groundType[p1];
 //        char c1 = car1[i];
-//        if (ban[g1] != c1) {
-//            int id1 = c1 == first[g1] ? p1 : p1 + n;
-//            int p2 = pos2[i];
-//            char g2 = groundType[p2];
-//            char c2 = car2[i];
-//            if (ban[g2] != c2) {
-//                int id2 = c2 == first[g2] ? p2 : p2 + n;
-//                addEdge(id1, id2);
-//                addEdge(other(id2), other(id1));
-//            } else {
-//                addEdge(id1, other(id1));
-//            }
+//        if (ban[g1] == c1) {
+//            continue;
+//        }
+//        int id1 = c1 == first[g1] ? p1 : p1 + n;
+//        int p2 = pos2[i];
+//        char g2 = groundType[p2];
+//        char c2 = car2[i];
+//        if (ban[g2] == c2) {
+//            addEdge(id1, other(id1));
+//        } else {
+//            int id2 = c2 == first[g2] ? p2 : p2 + n;
+//            addEdge(id1, id2);
+//            addEdge(other(id2), other(id1));
 //        }
 //    }
 //}
