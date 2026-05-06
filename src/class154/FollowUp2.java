@@ -17,12 +17,10 @@ package class154;
 //
 //using namespace std;
 //
-//using ll = long long;
-//
 //const int MAXN = 1000001;
 //int n, m;
 //
-//ll num[MAXN];
+//int num[MAXN];
 //int up[MAXN];
 //int ls[MAXN];
 //int rs[MAXN];
@@ -96,7 +94,7 @@ package class154;
 //    for (int i = 1; i <= n; i++) {
 //        cin >> num[i];
 //    }
-//    for (int i = 1, op, x, y; i <= m; i++) {
+//    for (int i = 1, op, x, y, z; i <= m; i++) {
 //        cin >> op;
 //        if (op == 0) {
 //            cin >> x >> y;
@@ -117,9 +115,7 @@ package class154;
 //            }
 //            root[y] = 0;
 //        } else {
-//            cin >> x >> y;
-//            ll z;
-//            cin >> z;
+//            cin >> x >> y >> z;
 //            int h = remove(y);
 //            num[y] = z;
 //            father[y] = y;

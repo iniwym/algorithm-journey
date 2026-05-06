@@ -22,7 +22,7 @@ public class FollowUp1 {
 	public static int MAXN = 1000001;
 	public static int n, m;
 
-	public static long[] num = new long[MAXN];
+	public static int[] num = new int[MAXN];
 	public static int[] up = new int[MAXN];
 	public static int[] ls = new int[MAXN];
 	public static int[] rs = new int[MAXN];
@@ -107,9 +107,9 @@ public class FollowUp1 {
 		m = in.nextInt();
 		prepare();
 		for (int i = 1; i <= n; i++) {
-			num[i] = in.nextLong();
+			num[i] = in.nextInt();
 		}
-		for (int i = 1, op, x, y; i <= m; i++) {
+		for (int i = 1, op, x, y, z; i <= m; i++) {
 			op = in.nextInt();
 			if (op == 0) {
 				x = in.nextInt();
@@ -138,7 +138,7 @@ public class FollowUp1 {
 			} else {
 				x = in.nextInt();
 				y = in.nextInt();
-				long z = in.nextLong();
+				z = in.nextInt();
 				int h = remove(y);
 				num[y] = z;
 				// y改值后重新作为单点堆
@@ -156,61 +156,43 @@ public class FollowUp1 {
 	}
 
 	// 读写工具类
-	public static class FastReader {
-		private final InputStream in;
-		private final byte[] buffer = new byte[1 << 16];
-		private int ptr = 0;
-		private int len = 0;
+	static class FastReader {
 
-		public FastReader(InputStream is) {
-			in = is;
+		private final byte[] buffer = new byte[1 << 16];
+		private int ptr = 0, len = 0;
+		private final InputStream in;
+
+		FastReader(InputStream in) {
+			this.in = in;
 		}
 
-		private int read() throws IOException {
+		private int readByte() throws IOException {
 			if (ptr >= len) {
 				len = in.read(buffer);
 				ptr = 0;
-				if (len <= 0) {
+				if (len <= 0)
 					return -1;
-				}
 			}
 			return buffer[ptr++];
 		}
 
-		public int nextInt() throws IOException {
+		int nextInt() throws IOException {
 			int c;
 			do {
-				c = read();
+				c = readByte();
 			} while (c <= ' ' && c != -1);
-			int sign = 1;
+			boolean neg = false;
 			if (c == '-') {
-				sign = -1;
-				c = read();
+				neg = true;
+				c = readByte();
 			}
-			int ans = 0;
-			while (c > ' ') {
-				ans = ans * 10 + c - '0';
-				c = read();
+			int val = 0;
+			while (c > ' ' && c != -1) {
+				val = val * 10 + (c - '0');
+				c = readByte();
 			}
-			return ans * sign;
-		}
-
-		public long nextLong() throws IOException {
-			int c;
-			do {
-				c = read();
-			} while (c <= ' ' && c != -1);
-			int sign = 1;
-			if (c == '-') {
-				sign = -1;
-				c = read();
-			}
-			long ans = 0;
-			while (c > ' ') {
-				ans = ans * 10 + c - '0';
-				c = read();
-			}
-			return sign == 1 ? ans : -ans;
+			return neg ? -val : val;
 		}
 	}
+
 }
