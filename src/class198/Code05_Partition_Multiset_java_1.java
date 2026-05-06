@@ -1,6 +1,6 @@
 package class198;
 
-// 划分可重集，cdq优化建图，java版
+// 划分可重集，树状数组优化建图，java版
 // 测试链接 : https://www.luogu.com.cn/problem/P7477
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
@@ -8,8 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.Arrays;
 
-public class Code05_PartitionMultiset_java_3 {
+public class Code05_Partition_Multiset_java_1 {
 
 	public static int MAXN = 20001;
 	public static int MAXM = 20001;
@@ -19,6 +20,9 @@ public class Code05_PartitionMultiset_java_3 {
 	public static int[] v = new int[MAXN];
 	public static int[] x = new int[MAXM];
 	public static int[] y = new int[MAXM];
+
+	public static int[] rak = new int[MAXN];
+	public static int[][] arr = new int[MAXN][2];
 
 	public static int[] head = new int[MAXT];
 	public static int[] nxt = new int[MAXE];
@@ -35,9 +39,11 @@ public class Code05_PartitionMultiset_java_3 {
 	public static int[] belong = new int[MAXT];
 	public static int sccCnt;
 
-	// cdq
-	public static int[] arr = new int[MAXN];
-	public static int[] tmp = new int[MAXN];
+	// 树状数组
+	public static int[] outTree1 = new int[MAXN];
+	public static int[] inTree1 = new int[MAXN];
+	public static int[] outTree2 = new int[MAXN];
+	public static int[] inTree2 = new int[MAXN];
 
 	// 迭代版需要的栈，讲解118讲了递归改迭代的技巧
 	public static int[] stau = new int[MAXT];
@@ -58,6 +64,36 @@ public class Code05_PartitionMultiset_java_3 {
 		u = stau[stacksize];
 		status = stas[stacksize];
 		e = stae[stacksize];
+	}
+
+	// <= num的范围长度
+	public static int small(int num) {
+		int l = 1, r = n, mid, ans = 0;
+		while (l <= r) {
+			mid = (l + r) >> 1;
+			if (arr[mid][0] <= num) {
+				ans = mid;
+				l = mid + 1;
+			} else {
+				r = mid - 1;
+			}
+		}
+		return ans;
+	}
+
+	// >= num的范围长度
+	public static int big(int num) {
+		int l = 1, r = n, mid, ans = n + 1;
+		while (l <= r) {
+			mid = (l + r) >> 1;
+			if (arr[mid][0] >= num) {
+				ans = mid;
+				r = mid - 1;
+			} else {
+				l = mid + 1;
+			}
+		}
+		return n - ans + 1;
 	}
 
 	public static void addEdge(int u, int v) {
@@ -133,74 +169,70 @@ public class Code05_PartitionMultiset_java_3 {
 		}
 	}
 
+	public static int lowbit(int i) {
+		return i & -i;
+	}
+
+	public static void addOut(int[] outTree, int i, int x) {
+		while (i <= n) {
+			int preo = outTree[i];
+			int curo = ++cntt;
+			if (preo > 0) {
+				addEdge(preo, curo);
+			}
+			addEdge(x, curo);
+			outTree[i] = curo;
+			i += lowbit(i);
+		}
+	}
+
+	public static void addIn(int[] inTree, int i, int x) {
+		while (i <= n) {
+			int prei = inTree[i];
+			int curi = ++cntt;
+			if (prei > 0) {
+				addEdge(curi, prei);
+			}
+			addEdge(curi, x);
+			inTree[i] = curi;
+			i += lowbit(i);
+		}
+	}
+
+	public static void rangeToX(int[] outTree, int i, int x) {
+		while (i > 0) {
+			if (outTree[i] > 0) {
+				addEdge(outTree[i], x);
+			}
+			i -= lowbit(i);
+		}
+	}
+
+	public static void xToRange(int[] inTree, int x, int i) {
+		while (i > 0) {
+			if (inTree[i] > 0) {
+				addEdge(x, inTree[i]);
+			}
+			i -= lowbit(i);
+		}
+	}
+
+	public static void add(int x, int otherx, int si, int bi) {
+		addOut(outTree1, si, x);
+		addIn(inTree1, si, otherx);
+		addOut(outTree2, bi, otherx);
+		addIn(inTree2, bi, x);
+	}
+
+	public static void link(int x, int otherx, int lowCnt, int highCnt) {
+		xToRange(inTree1, x, lowCnt);
+		rangeToX(outTree1, lowCnt, otherx);
+		xToRange(inTree2, otherx, highCnt);
+		rangeToX(outTree2, highCnt, x);
+	}
+
 	public static int other(int x) {
 		return x <= n ? x + n : x - n;
-	}
-
-	public static void merge(int l, int mid, int r, int k) {
-		int preOut = 0, curOut = 0, preIn = 0, curIn = 0;
-		for (int p1 = l - 1, p2 = mid + 1; p2 <= r; p2++) {
-			curOut = ++cntt;
-			curIn = ++cntt;
-			while (p1 + 1 <= mid && v[arr[p1 + 1]] <= v[arr[p2]] - k) {
-				p1++;
-				addEdge(arr[p1], curOut);
-				addEdge(curIn, other(arr[p1]));
-			}
-			if (preOut > 0) {
-				addEdge(preOut, curOut);
-				addEdge(curIn, preIn);
-			}
-			addEdge(curOut, other(arr[p2]));
-			addEdge(arr[p2], curIn);
-			preOut = curOut;
-			preIn = curIn;
-		}
-		preOut = curOut = preIn = curIn = 0;
-		for (int p1 = mid + 1, p2 = r; p2 >= mid + 1; p2--) {
-			curOut = ++cntt;
-			curIn = ++cntt;
-			while (p1 - 1 >= l && v[arr[p1 - 1]] >= v[arr[p2]] + k) {
-				p1--;
-				addEdge(other(arr[p1]), curOut);
-				addEdge(curIn, arr[p1]);
-			}
-			if (preOut > 0) {
-				addEdge(preOut, curOut);
-				addEdge(curIn, preIn);
-			}
-			addEdge(curOut, arr[p2]);
-			addEdge(other(arr[p2]), curIn);
-			preOut = curOut;
-			preIn = curIn;
-		}
-		int p1 = l, p2 = mid + 1, tsiz = 0;
-		while (p1 <= mid && p2 <= r) {
-			if (v[arr[p1]] <= v[arr[p2]]) {
-				tmp[++tsiz] = arr[p1++];
-			} else {
-				tmp[++tsiz] = arr[p2++];
-			}
-		}
-		while (p1 <= mid) {
-			tmp[++tsiz] = arr[p1++];
-		}
-		while (p2 <= r) {
-			tmp[++tsiz] = arr[p2++];
-		}
-		for (int i = l, j = 1; i <= r; i++, j++) {
-			arr[i] = tmp[j];
-		}
-	}
-
-	public static void cdq(int l, int r, int k) {
-		if (l == r) {
-			return;
-		}
-		int mid = (l + r) / 2;
-		cdq(l, mid, k);
-		cdq(mid + 1, r, k);
-		merge(l, mid, r, k);
 	}
 
 	public static void buildGraph(int k) {
@@ -212,14 +244,17 @@ public class Code05_PartitionMultiset_java_3 {
 			addEdge(other(y[i]), x[i]);
 		}
 		for (int i = 1; i <= n; i++) {
-			arr[i] = i;
+			link(i, other(i), small(v[i] - k), big(v[i] + k));
+			add(i, other(i), rak[i], n - rak[i] + 1);
 		}
-		cdq(1, n, k);
 	}
 
 	public static void clear() {
 		for (int i = 1; i <= cntt; i++) {
 			head[i] = dfn[i] = belong[i] = 0;
+		}
+		for (int i = 1; i <= n; i++) {
+			inTree1[i] = outTree1[i] = inTree2[i] = outTree2[i] = 0;
 		}
 		cntt = cntg = cntd = top = sccCnt = 0;
 	}
@@ -244,12 +279,15 @@ public class Code05_PartitionMultiset_java_3 {
 	}
 
 	public static int compute() {
-		int minv = v[1], maxv = v[1];
-		for (int i = 2; i <= n; i++) {
-			minv = Math.min(minv, v[i]);
-			maxv = Math.max(maxv, v[i]);
+		for (int i = 1; i <= n; i++) {
+			arr[i][0] = v[i];
+			arr[i][1] = i;
 		}
-		int l = 0, r = maxv - minv, mid, ans = -1;
+		Arrays.sort(arr, 1, n + 1, (a, b) -> a[0] != b[0] ? a[0] - b[0] : a[1] - b[1]);
+		for (int i = 1; i <= n; i++) {
+			rak[arr[i][1]] = i;
+		}
+		int l = 0, r = arr[n][0] - arr[1][0], mid, ans = -1;
 		while (l <= r) {
 			mid = (l + r) >> 1;
 			if (check(mid)) {
