@@ -1,6 +1,6 @@
 package class198;
 
-// cdq优化建图，java版
+// cdq优化建图，三维偏序，java版
 // 一共n个点，每个点给定三个点权，a[i]、b[i]、c[i]，初始时没有边
 // 一共m条操作，格式 x w，每个满足如下要求的点，都向x连权值为w的边
 // 三种点权 <= x对应的点权，这样的点就算满足要求，注意x自己也是达标的
@@ -11,7 +11,7 @@ package class198;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
-public class Code03_CdqOptimization1 {
+public class Code04_Cdq_Optimization_3D_java {
 
 	public static int MAXN = 101;
 	public static int MAXM = 1001;
@@ -255,7 +255,7 @@ public class Code03_CdqOptimization1 {
 	}
 
 	public static void main(String[] args) {
-		System.out.println("cdq优化建图");
+		System.out.println("cdq优化建图，三维偏序");
 		System.out.println("=============");
 		n = 100;
 		m = 1000;

@@ -1,28 +1,24 @@
 package class198;
 
-// 喵了个喵 II，树状数组优化建图，java版
-// 测试链接 : https://www.luogu.com.cn/problem/P9139
+// 划分可重集，cdq优化建图，java版
+// 测试链接 : https://www.luogu.com.cn/problem/P7477
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.Arrays;
 
-public class Code05_Meow_II_java_1 {
+public class Code05_PartitionMultiset_java_3 {
 
-	public static int MAXV = 50001;
-	public static int MAXN = 200001;
-	public static int MAXT = 5000001;
-	public static int MAXE = 20000001;
-	public static int v, n, cntt;
-
-	// 值v、位置i
-	public static int[][] vi = new int[MAXN][2];
-	// 左l、右r、决定编号x
-	public static int[][] group = new int[MAXN][3];
-	public static int cntp;
+	public static int MAXN = 20001;
+	public static int MAXM = 20001;
+	public static int MAXT = 1000001;
+	public static int MAXE = 2000001;
+	public static int n, m, cntt;
+	public static int[] v = new int[MAXN];
+	public static int[] x = new int[MAXM];
+	public static int[] y = new int[MAXM];
 
 	public static int[] head = new int[MAXT];
 	public static int[] nxt = new int[MAXE];
@@ -39,11 +35,9 @@ public class Code05_Meow_II_java_1 {
 	public static int[] belong = new int[MAXT];
 	public static int sccCnt;
 
-	// 树状数组
-	public static int[] inTree = new int[MAXN];
-	public static int[] outTree = new int[MAXN];
-
-	public static int[] ans = new int[MAXN];
+	// cdq
+	public static int[] arr = new int[MAXN];
+	public static int[] tmp = new int[MAXN];
 
 	// 迭代版需要的栈，讲解118讲了递归改迭代的技巧
 	public static int[] stau = new int[MAXT];
@@ -64,12 +58,6 @@ public class Code05_Meow_II_java_1 {
 		u = stau[stacksize];
 		status = stas[stacksize];
 		e = stae[stacksize];
-	}
-
-	public static void addPair(int l, int r, int x) {
-		group[++cntp][0] = l;
-		group[cntp][1] = r;
-		group[cntp][2] = x;
 	}
 
 	public static void addEdge(int u, int v) {
@@ -145,141 +133,149 @@ public class Code05_Meow_II_java_1 {
 		}
 	}
 
-	public static int lowbit(int i) {
-		return i & -i;
-	}
-
-	public static void addOut(int i, int x) {
-		while (i <= n) {
-			int preo = outTree[i];
-			int curo = ++cntt;
-			if (preo > 0) {
-				addEdge(preo, curo);
-			}
-			addEdge(x, curo);
-			outTree[i] = curo;
-			i += lowbit(i);
-		}
-	}
-
-	public static void addIn(int i, int x) {
-		while (i <= n) {
-			int prei = inTree[i];
-			int curi = ++cntt;
-			if (prei > 0) {
-				addEdge(curi, prei);
-			}
-			addEdge(curi, x);
-			inTree[i] = curi;
-			i += lowbit(i);
-		}
-	}
-
-	public static void rangeToX(int i, int x) {
-		while (i > 0) {
-			if (outTree[i] > 0) {
-				addEdge(outTree[i], x);
-			}
-			i -= lowbit(i);
-		}
-	}
-
-	public static void xToRange(int x, int i) {
-		while (i > 0) {
-			if (inTree[i] > 0) {
-				addEdge(x, inTree[i]);
-			}
-			i -= lowbit(i);
-		}
-	}
-
 	public static int other(int x) {
-		return x <= v ? x + v : x - v;
+		return x <= n ? x + n : x - n;
 	}
 
-	public static void buildGraph() {
-		Arrays.sort(group, 1, cntp + 1, (a, b) -> a[1] - b[1]);
-		cntt = v << 1;
-		for (int i = 1; i <= cntp; i++) {
-			int l = group[i][0];
-			// 后缀查询转化成前缀查询
-			int p = n - l + 1;
-			int x = group[i][2];
-			xToRange(x, p);
-			rangeToX(p, other(x));
-			addIn(p, other(x));
-			addOut(p, x);
+	public static void merge(int l, int mid, int r, int k) {
+		int preOut = 0, curOut = 0, preIn = 0, curIn = 0;
+		for (int p1 = l - 1, p2 = mid + 1; p2 <= r; p2++) {
+			curOut = ++cntt;
+			curIn = ++cntt;
+			while (p1 + 1 <= mid && v[arr[p1 + 1]] <= v[arr[p2]] - k) {
+				p1++;
+				addEdge(arr[p1], curOut);
+				addEdge(curIn, other(arr[p1]));
+			}
+			if (preOut > 0) {
+				addEdge(preOut, curOut);
+				addEdge(curIn, preIn);
+			}
+			addEdge(curOut, other(arr[p2]));
+			addEdge(arr[p2], curIn);
+			preOut = curOut;
+			preIn = curIn;
+		}
+		preOut = curOut = preIn = curIn = 0;
+		for (int p1 = mid + 1, p2 = r; p2 >= mid + 1; p2--) {
+			curOut = ++cntt;
+			curIn = ++cntt;
+			while (p1 - 1 >= l && v[arr[p1 - 1]] >= v[arr[p2]] + k) {
+				p1--;
+				addEdge(other(arr[p1]), curOut);
+				addEdge(curIn, arr[p1]);
+			}
+			if (preOut > 0) {
+				addEdge(preOut, curOut);
+				addEdge(curIn, preIn);
+			}
+			addEdge(curOut, arr[p2]);
+			addEdge(other(arr[p2]), curIn);
+			preOut = curOut;
+			preIn = curIn;
+		}
+		int p1 = l, p2 = mid + 1, tsiz = 0;
+		while (p1 <= mid && p2 <= r) {
+			if (v[arr[p1]] <= v[arr[p2]]) {
+				tmp[++tsiz] = arr[p1++];
+			} else {
+				tmp[++tsiz] = arr[p2++];
+			}
+		}
+		while (p1 <= mid) {
+			tmp[++tsiz] = arr[p1++];
+		}
+		while (p2 <= r) {
+			tmp[++tsiz] = arr[p2++];
+		}
+		for (int i = l, j = 1; i <= r; i++, j++) {
+			arr[i] = tmp[j];
 		}
 	}
 
-	public static boolean compute() {
-		Arrays.sort(vi, 1, n + 1, (a, b) -> a[0] != b[0] ? a[0] - b[0] : a[1] - b[1]);
-		for (int i = 1; i <= n; i += 4) {
-			int x = vi[i][0];
-			int a = vi[i][1];
-			int b = vi[i + 1][1];
-			int c = vi[i + 2][1];
-			int d = vi[i + 3][1];
-			addPair(a, b, x);
-			addPair(c, d, x);
-			addPair(a, c, x + v);
-			addPair(b, d, x + v);
+	public static void cdq(int l, int r, int k) {
+		if (l == r) {
+			return;
 		}
-		buildGraph();
-		for (int i = 1; i <= v << 1; i++) {
+		int mid = (l + r) / 2;
+		cdq(l, mid, k);
+		cdq(mid + 1, r, k);
+		merge(l, mid, r, k);
+	}
+
+	public static void buildGraph(int k) {
+		cntt = n << 1;
+		for (int i = 1; i <= m; i++) {
+			addEdge(x[i], other(y[i]));
+			addEdge(y[i], other(x[i]));
+			addEdge(other(x[i]), y[i]);
+			addEdge(other(y[i]), x[i]);
+		}
+		for (int i = 1; i <= n; i++) {
+			arr[i] = i;
+		}
+		cdq(1, n, k);
+	}
+
+	public static void clear() {
+		for (int i = 1; i <= cntt; i++) {
+			head[i] = dfn[i] = belong[i] = 0;
+		}
+		cntt = cntg = cntd = top = sccCnt = 0;
+	}
+
+	public static boolean check(int k) {
+		buildGraph(k);
+		for (int i = 1; i <= n << 1; i++) {
 			if (dfn[i] == 0) {
 				// tarjan1(i);
 				tarjan2(i);
 			}
 		}
 		boolean check = true;
-		for (int i = 1; i <= v; i++) {
-			if (belong[i] == belong[i + v]) {
+		for (int i = 1; i <= n; i++) {
+			if (belong[i] == belong[i + n]) {
 				check = false;
 				break;
 			}
 		}
-		if (check) {
-			for (int i = 1; i <= n; i += 4) {
-				int x = vi[i][0];
-				int a = vi[i][1];
-				int b = vi[i + 1][1];
-				int c = vi[i + 2][1];
-				int d = vi[i + 3][1];
-				if (belong[x] < belong[x + v]) {
-					ans[a] = 0;
-					ans[b] = 1;
-					ans[c] = 0;
-					ans[d] = 1;
-				} else {
-					ans[a] = 0;
-					ans[b] = 0;
-					ans[c] = 1;
-					ans[d] = 1;
-				}
+		clear();
+		return check;
+	}
+
+	public static int compute() {
+		int minv = v[1], maxv = v[1];
+		for (int i = 2; i <= n; i++) {
+			minv = Math.min(minv, v[i]);
+			maxv = Math.max(maxv, v[i]);
+		}
+		int l = 0, r = maxv - minv, mid, ans = -1;
+		while (l <= r) {
+			mid = (l + r) >> 1;
+			if (check(mid)) {
+				ans = mid;
+				r = mid - 1;
+			} else {
+				l = mid + 1;
 			}
 		}
-		return check;
+		return ans;
 	}
 
 	public static void main(String[] args) throws Exception {
 		FastReader in = new FastReader(System.in);
 		PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out));
-		v = in.nextInt();
-		n = v << 2;
+		n = in.nextInt();
+		m = in.nextInt();
 		for (int i = 1; i <= n; i++) {
-			vi[i][0] = in.nextInt();
-			vi[i][1] = i;
+			v[i] = in.nextInt();
 		}
-		boolean check = compute();
-		if (check) {
-			out.println("Yes");
-			for (int i = 1; i <= n; i++) {
-				out.print(ans[i]);
-			}
-		} else {
-			out.println("No");
+		for (int i = 1; i <= m; i++) {
+			x[i] = in.nextInt();
+			y[i] = in.nextInt();
 		}
+		int ans = compute();
+		out.println(ans);
 		out.flush();
 		out.close();
 	}
