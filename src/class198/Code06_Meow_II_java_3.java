@@ -166,19 +166,19 @@ public class Code06_Meow_II_java_3 {
 			preOut = curOut;
 			preIn = curIn;
 		}
-		int p1 = l, p2 = mid + 1, tsiz = 0;
+		int p1 = l, p2 = mid + 1, ti = 0;
 		while (p1 <= mid && p2 <= r) {
 			if (group[arr[p1]][0] <= group[arr[p2]][0]) {
-				tmp[++tsiz] = arr[p1++];
+				tmp[++ti] = arr[p1++];
 			} else {
-				tmp[++tsiz] = arr[p2++];
+				tmp[++ti] = arr[p2++];
 			}
 		}
 		while (p1 <= mid) {
-			tmp[++tsiz] = arr[p1++];
+			tmp[++ti] = arr[p1++];
 		}
 		while (p2 <= r) {
-			tmp[++tsiz] = arr[p2++];
+			tmp[++ti] = arr[p2++];
 		}
 		for (int i = l, j = 1; i <= r; i++, j++) {
 			arr[i] = tmp[j];

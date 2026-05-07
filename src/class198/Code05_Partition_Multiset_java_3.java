@@ -174,19 +174,19 @@ public class Code05_Partition_Multiset_java_3 {
 			preOut = curOut;
 			preIn = curIn;
 		}
-		int p1 = l, p2 = mid + 1, tsiz = 0;
+		int p1 = l, p2 = mid + 1, ti = 0;
 		while (p1 <= mid && p2 <= r) {
 			if (v[arr[p1]] <= v[arr[p2]]) {
-				tmp[++tsiz] = arr[p1++];
+				tmp[++ti] = arr[p1++];
 			} else {
-				tmp[++tsiz] = arr[p2++];
+				tmp[++ti] = arr[p2++];
 			}
 		}
 		while (p1 <= mid) {
-			tmp[++tsiz] = arr[p1++];
+			tmp[++ti] = arr[p1++];
 		}
 		while (p2 <= r) {
-			tmp[++tsiz] = arr[p2++];
+			tmp[++ti] = arr[p2++];
 		}
 		for (int i = l, j = 1; i <= r; i++, j++) {
 			arr[i] = tmp[j];
