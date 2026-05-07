@@ -23,7 +23,8 @@ public class Code04_CdqOptimization3D1 {
 	public static int[] b = new int[MAXN];
 	public static int[] c = new int[MAXN];
 
-	public static int[][] iabc = new int[MAXN][4];
+	// i、a、b、c
+	public static int[][] arr = new int[MAXN][4];
 	public static int cnta;
 
 	// 建图
@@ -93,20 +94,20 @@ public class Code04_CdqOptimization3D1 {
 	public static void merge(int l, int m, int r) {
 		int p1, p2;
 		for (p1 = l - 1, p2 = m + 1; p2 <= r; p2++) {
-			while (p1 + 1 <= m && iabc[p1 + 1][2] <= iabc[p2][2]) {
+			while (p1 + 1 <= m && arr[p1 + 1][2] <= arr[p2][2]) {
 				p1++;
-				add(iabc[p1][3], iabc[p1][0]);
+				add(arr[p1][3], arr[p1][0]);
 			}
-			for (int e = headp[iabc[p2][0]]; e > 0; e = nextp[e]) {
+			for (int e = headp[arr[p2][0]]; e > 0; e = nextp[e]) {
 				int x = top[e];
 				int w = weightp[e];
-				rangeToX(iabc[p2][3], x, w);
+				rangeToX(arr[p2][3], x, w);
 			}
 		}
 		for (int i = l; i <= p1; i++) {
-			clear(iabc[i][3]);
+			clear(arr[i][3]);
 		}
-		Arrays.sort(iabc, l, r + 1, (x, y) -> x[2] - y[2]);
+		Arrays.sort(arr, l, r + 1, (x, y) -> x[2] - y[2]);
 	}
 
 	public static void cdq(int l, int r) {
@@ -121,34 +122,34 @@ public class Code04_CdqOptimization3D1 {
 
 	public static void buildGraph() {
 		for (int i = 1; i <= n; i++) {
-			iabc[i][0] = i;
-			iabc[i][1] = a[i];
-			iabc[i][2] = b[i];
-			iabc[i][3] = c[i];
+			arr[i][0] = i;
+			arr[i][1] = a[i];
+			arr[i][2] = b[i];
+			arr[i][3] = c[i];
 			maxc = Math.max(maxc, c[i]);
 		}
-		Arrays.sort(iabc, 1, n + 1, (x, y) -> x[1] != y[1] ? x[1] - y[1] : x[2] != y[2] ? x[2] - y[2] : x[3] - y[3]);
+		Arrays.sort(arr, 1, n + 1, (x, y) -> x[1] != y[1] ? x[1] - y[1] : x[2] != y[2] ? x[2] - y[2] : x[3] - y[3]);
 		cntt = n;
 		for (int l = 1, r = 1; l <= n; l = ++r) {
-			int a = iabc[l][1];
-			int b = iabc[l][2];
-			int c = iabc[l][3];
-			while (r + 1 <= n && a == iabc[r + 1][1] && b == iabc[r + 1][2] && c == iabc[r + 1][3]) {
+			int a = arr[l][1];
+			int b = arr[l][2];
+			int c = arr[l][3];
+			while (r + 1 <= n && a == arr[r + 1][1] && b == arr[r + 1][2] && c == arr[r + 1][3]) {
 				r++;
 			}
 			int x = ++cntt;
 			for (int i = l; i <= r; i++) {
-				int u = iabc[i][0];
+				int u = arr[i][0];
 				addEdge(u, x, 0);
 				for (int e = headp[u]; e > 0; e = nextp[e]) {
 					addEdge(x, u, weightp[e]);
 					addOp(x, u, weightp[e]);
 				}
 			}
-			iabc[++cnta][0] = x;
-			iabc[cnta][1] = a;
-			iabc[cnta][2] = b;
-			iabc[cnta][3] = c;
+			arr[++cnta][0] = x;
+			arr[cnta][1] = a;
+			arr[cnta][2] = b;
+			arr[cnta][3] = c;
 		}
 		cdq(1, cnta);
 	}

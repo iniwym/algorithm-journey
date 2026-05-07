@@ -22,10 +22,10 @@ public class Code03_CdqOptimization2D1 {
 	public static int[] a = new int[MAXN];
 	public static int[] b = new int[MAXN];
 
-	public static int[][] iab = new int[MAXN][3];
-	public static int cnta;
-
+	// i, a, b
+	public static int[][] arr = new int[MAXN][3];
 	public static int[][] tmp = new int[MAXN][3];
+	public static int cnta;
 
 	// 建图
 	public static int[] headg = new int[MAXT];
@@ -65,14 +65,14 @@ public class Code03_CdqOptimization2D1 {
 		int pre = 0, cur = 0;
 		for (int p1 = l - 1, p2 = mid + 1; p2 <= r; p2++) {
 			cur = ++cntt;
-			while (p1 + 1 <= mid && iab[p1 + 1][2] <= iab[p2][2]) {
+			while (p1 + 1 <= mid && arr[p1 + 1][2] <= arr[p2][2]) {
 				p1++;
-				addEdge(iab[p1][0], cur, 0);
+				addEdge(arr[p1][0], cur, 0);
 			}
 			if (pre > 0) {
 				addEdge(pre, cur, 0);
 			}
-			for (int e = headp[iab[p2][0]]; e > 0; e = nextp[e]) {
+			for (int e = headp[arr[p2][0]]; e > 0; e = nextp[e]) {
 				int x = top[e];
 				int w = weightp[e];
 				addEdge(cur, x, w);
@@ -81,20 +81,20 @@ public class Code03_CdqOptimization2D1 {
 		}
 		int p1 = l, p2 = mid + 1, ti = 0;
 		while (p1 <= mid && p2 <= r) {
-			if (iab[p1][2] <= iab[p2][2]) {
-				clone(tmp, ++ti, iab, p1++);
+			if (arr[p1][2] <= arr[p2][2]) {
+				clone(tmp, ++ti, arr, p1++);
 			} else {
-				clone(tmp, ++ti, iab, p2++);
+				clone(tmp, ++ti, arr, p2++);
 			}
 		}
 		while (p1 <= mid) {
-			clone(tmp, ++ti, iab, p1++);
+			clone(tmp, ++ti, arr, p1++);
 		}
 		while (p2 <= r) {
-			clone(tmp, ++ti, iab, p2++);
+			clone(tmp, ++ti, arr, p2++);
 		}
 		for (int i = l, j = 1; i <= r; i++, j++) {
-			clone(iab, i, tmp, j);
+			clone(arr, i, tmp, j);
 		}
 	}
 
@@ -110,30 +110,30 @@ public class Code03_CdqOptimization2D1 {
 
 	public static void buildGraph() {
 		for (int i = 1; i <= n; i++) {
-			iab[i][0] = i;
-			iab[i][1] = a[i];
-			iab[i][2] = b[i];
+			arr[i][0] = i;
+			arr[i][1] = a[i];
+			arr[i][2] = b[i];
 		}
-		Arrays.sort(iab, 1, n + 1, (x, y) -> x[1] != y[1] ? x[1] - y[1] : x[2] - y[2]);
+		Arrays.sort(arr, 1, n + 1, (x, y) -> x[1] != y[1] ? x[1] - y[1] : x[2] - y[2]);
 		cntt = n;
 		for (int l = 1, r = 1; l <= n; l = ++r) {
-			int a = iab[l][1];
-			int b = iab[l][2];
-			while (r + 1 <= n && a == iab[r + 1][1] && b == iab[r + 1][2]) {
+			int a = arr[l][1];
+			int b = arr[l][2];
+			while (r + 1 <= n && a == arr[r + 1][1] && b == arr[r + 1][2]) {
 				r++;
 			}
 			int x = ++cntt;
 			for (int i = l; i <= r; i++) {
-				int u = iab[i][0];
+				int u = arr[i][0];
 				addEdge(u, x, 0);
 				for (int e = headp[u]; e > 0; e = nextp[e]) {
 					addEdge(x, u, weightp[e]);
 					addOp(x, u, weightp[e]);
 				}
 			}
-			iab[++cnta][0] = x;
-			iab[cnta][1] = a;
-			iab[cnta][2] = b;
+			arr[++cnta][0] = x;
+			arr[cnta][1] = a;
+			arr[cnta][2] = b;
 		}
 		cdq(1, cnta);
 	}
