@@ -1,9 +1,9 @@
 package class198;
 
-// cdq优化建图，三维偏序，java版
-// 一共n个点，每个点给定三个点权，a[i]、b[i]、c[i]，初始时没有边
+// cdq优化建图，二维偏序，java版
+// 一共n个点，每个点给定两个点权，a[i]、b[i]，初始时没有边
 // 一共m条操作，格式 x w，每个满足如下要求的点，都向x连权值为w的边
-// 三种点权 <= x对应的点权，这样的点就算满足要求，注意x自己也是达标的
+// 两种点权 <= x对应的点权，这样的点就算满足要求，注意x自己也是达标的
 // 1 <= 所有数值
 // 建好图之后可以测试图的任何算法，比如dijkstra算法求最短路
 // 对数器验证
@@ -11,20 +11,21 @@ package class198;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
-public class Code04_Cdq_Optimization_3D_java {
+public class Code03_CdqOptimization2D1 {
 
 	public static int MAXN = 101;
 	public static int MAXM = 1001;
 	public static int MAXV = 10001;
 	public static int MAXT = 100001;
 	public static int MAXE = 100001;
-	public static int n, m, maxc, cntt;
+	public static int n, m, cntt;
 	public static int[] a = new int[MAXN];
 	public static int[] b = new int[MAXN];
-	public static int[] c = new int[MAXN];
 
-	public static int[][] iabc = new int[MAXN][4];
+	public static int[][] iab = new int[MAXN][3];
 	public static int cnta;
+
+	public static int[][] tmp = new int[MAXN][3];
 
 	// 建图
 	public static int[] headg = new int[MAXT];
@@ -40,9 +41,6 @@ public class Code04_Cdq_Optimization_3D_java {
 	public static int[] weightp = new int[MAXM << 1];
 	public static int cntp;
 
-	// 树状数组
-	public static int[] tree = new int[MAXV];
-
 	public static void addEdge(int u, int v, int w) {
 		nextg[++cntg] = headg[u];
 		tog[cntg] = v;
@@ -57,56 +55,47 @@ public class Code04_Cdq_Optimization_3D_java {
 		headp[x] = cntp;
 	}
 
-	public static int lowbit(int i) {
-		return i & -i;
+	public static void clone(int[][] a, int i, int[][] b, int j) {
+		a[i][0] = b[j][0];
+		a[i][1] = b[j][1];
+		a[i][2] = b[j][2];
 	}
 
-	public static void add(int i, int x) {
-		while (i <= maxc) {
-			int pre = tree[i];
-			int cur = ++cntt;
-			if (pre != 0) {
+	public static void merge(int l, int mid, int r) {
+		int pre = 0, cur = 0;
+		for (int p1 = l - 1, p2 = mid + 1; p2 <= r; p2++) {
+			cur = ++cntt;
+			while (p1 + 1 <= mid && iab[p1 + 1][2] <= iab[p2][2]) {
+				p1++;
+				addEdge(iab[p1][0], cur, 0);
+			}
+			if (pre > 0) {
 				addEdge(pre, cur, 0);
 			}
-			addEdge(x, cur, 0);
-			tree[i] = cur;
-			i += lowbit(i);
-		}
-	}
-
-	public static void rangeToX(int i, int x, int w) {
-		while (i > 0) {
-			if (tree[i] > 0) {
-				addEdge(tree[i], x, w);
-			}
-			i -= lowbit(i);
-		}
-	}
-
-	public static void clear(int val) {
-		while (val <= maxc) {
-			tree[val] = 0;
-			val += lowbit(val);
-		}
-	}
-
-	public static void merge(int l, int m, int r) {
-		int p1, p2;
-		for (p1 = l - 1, p2 = m + 1; p2 <= r; p2++) {
-			while (p1 + 1 <= m && iabc[p1 + 1][2] <= iabc[p2][2]) {
-				p1++;
-				add(iabc[p1][3], iabc[p1][0]);
-			}
-			for (int e = headp[iabc[p2][0]]; e > 0; e = nextp[e]) {
+			for (int e = headp[iab[p2][0]]; e > 0; e = nextp[e]) {
 				int x = top[e];
 				int w = weightp[e];
-				rangeToX(iabc[p2][3], x, w);
+				addEdge(cur, x, w);
+			}
+			pre = cur;
+		}
+		int p1 = l, p2 = mid + 1, ti = 0;
+		while (p1 <= mid && p2 <= r) {
+			if (iab[p1][2] <= iab[p2][2]) {
+				clone(tmp, ++ti, iab, p1++);
+			} else {
+				clone(tmp, ++ti, iab, p2++);
 			}
 		}
-		for (int i = l; i <= p1; i++) {
-			clear(iabc[i][3]);
+		while (p1 <= mid) {
+			clone(tmp, ++ti, iab, p1++);
 		}
-		Arrays.sort(iabc, l, r + 1, (x, y) -> x[2] - y[2]);
+		while (p2 <= r) {
+			clone(tmp, ++ti, iab, p2++);
+		}
+		for (int i = l, j = 1; i <= r; i++, j++) {
+			clone(iab, i, tmp, j);
+		}
 	}
 
 	public static void cdq(int l, int r) {
@@ -121,34 +110,30 @@ public class Code04_Cdq_Optimization_3D_java {
 
 	public static void buildGraph() {
 		for (int i = 1; i <= n; i++) {
-			iabc[i][0] = i;
-			iabc[i][1] = a[i];
-			iabc[i][2] = b[i];
-			iabc[i][3] = c[i];
-			maxc = Math.max(maxc, c[i]);
+			iab[i][0] = i;
+			iab[i][1] = a[i];
+			iab[i][2] = b[i];
 		}
-		Arrays.sort(iabc, 1, n + 1, (x, y) -> x[1] != y[1] ? x[1] - y[1] : x[2] != y[2] ? x[2] - y[2] : x[3] - y[3]);
+		Arrays.sort(iab, 1, n + 1, (x, y) -> x[1] != y[1] ? x[1] - y[1] : x[2] - y[2]);
 		cntt = n;
 		for (int l = 1, r = 1; l <= n; l = ++r) {
-			int a = iabc[l][1];
-			int b = iabc[l][2];
-			int c = iabc[l][3];
-			while (r + 1 <= n && a == iabc[r + 1][1] && b == iabc[r + 1][2] && c == iabc[r + 1][3]) {
+			int a = iab[l][1];
+			int b = iab[l][2];
+			while (r + 1 <= n && a == iab[r + 1][1] && b == iab[r + 1][2]) {
 				r++;
 			}
 			int x = ++cntt;
 			for (int i = l; i <= r; i++) {
-				int u = iabc[i][0];
+				int u = iab[i][0];
 				addEdge(u, x, 0);
 				for (int e = headp[u]; e > 0; e = nextp[e]) {
 					addEdge(x, u, weightp[e]);
 					addOp(x, u, weightp[e]);
 				}
 			}
-			iabc[++cnta][0] = x;
-			iabc[cnta][1] = a;
-			iabc[cnta][2] = b;
-			iabc[cnta][3] = c;
+			iab[++cnta][0] = x;
+			iab[cnta][1] = a;
+			iab[cnta][2] = b;
 		}
 		cdq(1, cnta);
 	}
@@ -169,7 +154,7 @@ public class Code04_Cdq_Optimization_3D_java {
 
 	public static void link(int x, int w) {
 		for (int i = 1; i <= n; i++) {
-			if (a[i] <= a[x] && b[i] <= b[x] && c[i] <= c[x]) {
+			if (a[i] <= a[x] && b[i] <= b[x]) {
 				addEdge_2(i, x, w);
 			}
 		}
@@ -251,11 +236,11 @@ public class Code04_Cdq_Optimization_3D_java {
 		for (int i = 1; i <= n; i++) {
 			head_2[i] = 0;
 		}
-		maxc = cnta = cntg = cntp = cntt = cnt_2 = 0;
+		cnta = cntg = cntp = cntt = cnt_2 = 0;
 	}
 
 	public static void main(String[] args) {
-		System.out.println("cdq优化建图，三维偏序");
+		System.out.println("cdq优化建图，二维偏序");
 		System.out.println("=============");
 		n = 100;
 		m = 1000;
@@ -268,7 +253,6 @@ public class Code04_Cdq_Optimization_3D_java {
 			for (int i = 1; i <= n; i++) {
 				a[i] = random(valMax);
 				b[i] = random(valMax);
-				c[i] = random(valMax);
 			}
 			for (int i = 1; i <= m; i++) {
 				int x = random(n);
