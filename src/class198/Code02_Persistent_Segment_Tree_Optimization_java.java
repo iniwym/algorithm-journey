@@ -1,18 +1,18 @@
 package class198;
 
-// 树状数组优化建图，java版
+// 主席树优化建图，java版
 // 点的编号范围1~n，点权范围1~v，初始时袋子为空，没有任何边，实现如下方法
 // add(x, xv)，编号为x、点权为xv的点进入袋子，该编号已经入袋则忽略
-// rangeToX(p, x, w)，袋中点权范围1~p的每个点，向点x连边权为w的边
-// xToRange(x, p, w)，点x向袋中点权范围1~p的每个点，连边权为w的边
-// rangeToRange(p1, p2, w)，袋中点权范围1~p1的每个点，向
-//             袋中点权范围1~p2的每个点，都连一条边权为w的边
+// rangeToX(l, r, x, w)，袋中点权范围l~r的每个点，向点x连边权为w的边
+// xToRange(x, l, r, w)，点x向袋中点权范围l~r的每个点，连边权为w的边
+// rangeToRange(l1, r1, l2, r2, w)，袋中点权范围l1~r1的每个点，向
+//             袋中点权范围l2~r2的每个点，都连一条边权为w的边
 // 建好图之后可以测试图的任何算法，比如dijkstra算法求最短路
 // 对数器验证
 
 import java.util.PriorityQueue;
 
-public class Code01_FenwickTreeOptimization1 {
+public class Code02_Persistent_Segment_Tree_Optimization_java {
 
 	public static int MAXN = 1001;
 	public static int MAXV = 1001;
@@ -28,8 +28,11 @@ public class Code01_FenwickTreeOptimization1 {
 	public static int[] weight = new int[MAXE];
 	public static int cntg;
 
-	public static int[] inTree = new int[MAXV];
-	public static int[] outTree = new int[MAXV];
+	public static int[] rootOut = new int[MAXN];
+	public static int[] rootIn = new int[MAXN];
+	public static int[] ls = new int[MAXT];
+	public static int[] rs = new int[MAXT];
+	public static int curVersion;
 
 	public static void addEdge(int u, int v, int w) {
 		nxt[++cntg] = head[u];
@@ -38,67 +41,120 @@ public class Code01_FenwickTreeOptimization1 {
 		head[u] = cntg;
 	}
 
-	public static int lowbit(int i) {
-		return i & -i;
+	public static int buildOut(int l, int r) {
+		int rt = ++cntt;
+		if (l < r) {
+			int mid = (l + r) >> 1;
+			ls[rt] = buildOut(l, mid);
+			rs[rt] = buildOut(mid + 1, r);
+			addEdge(ls[rt], rt, 0);
+			addEdge(rs[rt], rt, 0);
+		}
+		return rt;
 	}
 
-	public static void addOut(int x, int xv) {
-		while (xv <= v) {
-			int preo = outTree[xv];
-			int curo = ++cntt;
-			if (preo > 0) {
-				addEdge(preo, curo, 0);
-			}
-			addEdge(x, curo, 0);
-			outTree[xv] = curo;
-			xv += lowbit(xv);
+	public static int buildIn(int l, int r) {
+		int rt = ++cntt;
+		if (l < r) {
+			int mid = (l + r) >> 1;
+			ls[rt] = buildIn(l, mid);
+			rs[rt] = buildIn(mid + 1, r);
+			addEdge(rt, ls[rt], 0);
+			addEdge(rt, rs[rt], 0);
 		}
+		return rt;
 	}
 
-	public static void addIn(int x, int xv) {
-		while (xv <= v) {
-			int prei = inTree[xv];
-			int curi = ++cntt;
-			if (prei > 0) {
-				addEdge(curi, prei, 0);
+	public static int addOut(int jobx, int jobv, int l, int r, int i) {
+		int rt = ++cntt;
+		ls[rt] = ls[i];
+		rs[rt] = rs[i];
+		addEdge(i, rt, 0);
+		if (l == r) {
+			addEdge(jobx, rt, 0);
+		} else {
+			int mid = (l + r) >> 1;
+			if (jobv <= mid) {
+				ls[rt] = addOut(jobx, jobv, l, mid, ls[rt]);
+				addEdge(ls[rt], rt, 0);
+			} else {
+				rs[rt] = addOut(jobx, jobv, mid + 1, r, rs[rt]);
+				addEdge(rs[rt], rt, 0);
 			}
-			addEdge(curi, x, 0);
-			inTree[xv] = curi;
-			xv += lowbit(xv);
 		}
+		return rt;
+	}
+
+	public static int addIn(int jobx, int jobv, int l, int r, int i) {
+		int rt = ++cntt;
+		ls[rt] = ls[i];
+		rs[rt] = rs[i];
+		addEdge(rt, i, 0);
+		if (l == r) {
+			addEdge(rt, jobx, 0);
+		} else {
+			int mid = (l + r) >> 1;
+			if (jobv <= mid) {
+				ls[rt] = addIn(jobx, jobv, l, mid, ls[rt]);
+				addEdge(rt, ls[rt], 0);
+			} else {
+				rs[rt] = addIn(jobx, jobv, mid + 1, r, rs[rt]);
+				addEdge(rt, rs[rt], 0);
+			}
+		}
+		return rt;
 	}
 
 	public static void add(int x, int xv) {
 		if (!inBag[x]) {
 			inBag[x] = true;
-			addOut(x, xv);
-			addIn(x, xv);
+			curVersion++;
+			rootOut[curVersion] = addOut(x, xv, 1, v, rootOut[curVersion - 1]);
+			rootIn[curVersion] = addIn(x, xv, 1, v, rootIn[curVersion - 1]);
 		}
 	}
 
-	public static void rangeToX(int p, int x, int w) {
-		while (p > 0) {
-			if (outTree[p] > 0) {
-				addEdge(outTree[p], x, w);
+	public static void rangeToX(int jobl, int jobr, int jobx, int jobw, int l, int r, int i) {
+		if (jobl <= l && r <= jobr) {
+			addEdge(i, jobx, jobw);
+		} else {
+			int mid = (l + r) >> 1;
+			if (jobl <= mid) {
+				rangeToX(jobl, jobr, jobx, jobw, l, mid, ls[i]);
 			}
-			p -= lowbit(p);
-		}
-	}
-
-	public static void xToRange(int x, int p, int w) {
-		while (p > 0) {
-			if (inTree[p] > 0) {
-				addEdge(x, inTree[p], w);
+			if (jobr > mid) {
+				rangeToX(jobl, jobr, jobx, jobw, mid + 1, r, rs[i]);
 			}
-			p -= lowbit(p);
 		}
 	}
 
-	public static void rangeToRange(int p1, int p2, int w) {
+	public static void rangeToX(int l, int r, int x, int w) {
+		rangeToX(l, r, x, w, 1, v, rootOut[curVersion]);
+	}
+
+	public static void xToRange(int jobx, int jobl, int jobr, int jobw, int l, int r, int i) {
+		if (jobl <= l && r <= jobr) {
+			addEdge(jobx, i, jobw);
+		} else {
+			int mid = (l + r) >> 1;
+			if (jobl <= mid) {
+				xToRange(jobx, jobl, jobr, jobw, l, mid, ls[i]);
+			}
+			if (jobr > mid) {
+				xToRange(jobx, jobl, jobr, jobw, mid + 1, r, rs[i]);
+			}
+		}
+	}
+
+	public static void xToRange(int x, int l, int r, int w) {
+		xToRange(x, l, r, w, 1, v, rootIn[curVersion]);
+	}
+
+	public static void rangeToRange(int l1, int r1, int l2, int r2, int w) {
 		int x = ++cntt;
 		int y = ++cntt;
-		rangeToX(p1, x, 0);
-		xToRange(y, p2, 0);
+		rangeToX(l1, r1, x, 0);
+		xToRange(y, l2, r2, 0);
 		addEdge(x, y, w);
 	}
 
@@ -129,27 +185,27 @@ public class Code01_FenwickTreeOptimization1 {
 		}
 	}
 
-	public static void rangeToX_2(int p, int x, int w) {
+	public static void rangeToX_2(int l, int r, int x, int w) {
 		for (int i = 1; i <= bag_siz; i++) {
-			if (bag_val[i] <= p) {
+			if (bag_val[i] >= l && bag_val[i] <= r) {
 				addEdge_2(bag_id[i], x, w);
 			}
 		}
 	}
 
-	public static void xToRange_2(int x, int p, int w) {
+	public static void xToRange_2(int x, int l, int r, int w) {
 		for (int i = 1; i <= bag_siz; i++) {
-			if (bag_val[i] <= p) {
+			if (bag_val[i] >= l && bag_val[i] <= r) {
 				addEdge_2(x, bag_id[i], w);
 			}
 		}
 	}
 
-	public static void rangeToRange_2(int p1, int p2, int w) {
+	public static void rangeToRange_2(int l1, int r1, int l2, int r2, int w) {
 		for (int i = 1; i <= bag_siz; i++) {
-			if (bag_val[i] <= p1) {
+			if (bag_val[i] >= l1 && bag_val[i] <= r1) {
 				for (int j = 1; j <= bag_siz; j++) {
-					if (bag_val[j] <= p2) {
+					if (bag_val[j] >= l2 && bag_val[j] <= r2) {
 						addEdge_2(bag_id[i], bag_id[j], w);
 					}
 				}
@@ -232,10 +288,7 @@ public class Code01_FenwickTreeOptimization1 {
 		}
 		cntg = 0;
 		cntt = 0;
-		for (int i = 1; i <= v; i++) {
-			inTree[i] = 0;
-			outTree[i] = 0;
-		}
+		curVersion = 0;
 		for (int i = 1; i <= n; i++) {
 			inBag[i] = false;
 			in_bag_2[i] = false;
@@ -246,7 +299,7 @@ public class Code01_FenwickTreeOptimization1 {
 	}
 
 	public static void main(String[] args) {
-		System.out.println("树状数组优化建图");
+		System.out.println("主席树优化建图");
 		System.out.println("============");
 		n = 100;
 		v = 200;
@@ -256,6 +309,8 @@ public class Code01_FenwickTreeOptimization1 {
 			System.out.println("第" + t + "轮");
 			System.out.println("测试开始");
 			cntt = n;
+			rootOut[0] = buildOut(1, v);
+			rootIn[0] = buildIn(1, v);
 			int opCnt = 200;
 			for (int i = 1; i <= opCnt; i++) {
 				int op = random(4);
@@ -265,19 +320,25 @@ public class Code01_FenwickTreeOptimization1 {
 					add(x, xv);
 					add_2(x, xv);
 				} else {
-					int p = random(v);
-					int p2 = random(v);
+					int a = random(v);
+					int b = random(v);
+					int l = Math.min(a, b);
+					int r = Math.max(a, b);
+					a = random(v);
+					b = random(v);
+					int l2 = Math.min(a, b);
+					int r2 = Math.max(a, b);
 					int x = random(n);
 					int w = random(weightMax);
 					if (op == 2) {
-						rangeToX(p, x, w);
-						rangeToX_2(p, x, w);
+						rangeToX(l, r, x, w);
+						rangeToX_2(l, r, x, w);
 					} else if (op == 3) {
-						xToRange(x, p, w);
-						xToRange_2(x, p, w);
+						xToRange(x, l, r, w);
+						xToRange_2(x, l, r, w);
 					} else {
-						rangeToRange(p, p2, w);
-						rangeToRange_2(p, p2, w);
+						rangeToRange(l, r, l2, r2, w);
+						rangeToRange_2(l, r, l2, r2, w);
 					}
 				}
 			}
