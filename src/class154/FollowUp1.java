@@ -2,7 +2,7 @@ package class154;
 
 // 可并堆2，java版
 // 这道题课上没有讲，一个值得实现的左偏树模版题
-// 完全是课上讲过的代码，看懂课就能看懂实现，注意打注释位置的代码即可
+// 完全是课上讲过的代码，看懂课就能看懂实现
 // 给定n个元素，编号为1到n，给定每个元素的值num[i]
 // 初始时每个元素单独组成一个集合，接下来有m次操作，类型有四种，格式如下
 // 操作 0 x y   : 集合x中删除元素y，题目保证y一定在集合x中
@@ -10,6 +10,7 @@ package class154;
 // 操作 2 x y   : 集合y合并到集合x，题目保证以后不会再有以y做集合编号的操作
 // 操作 3 x y z : 集合x中元素y的权值修改为z，题目保证修改操作值只可能变小
 // 测试链接 : https://www.luogu.com.cn/problem/P11266
+// 注意打注释位置的代码即可
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
 import java.io.IOException;
@@ -132,9 +133,6 @@ public class FollowUp1 {
 					father[root[x]] = root[x];
 					up[root[x]] = 0;
 				}
-				// 集合y被清空
-				// 题目保证不会再涉及这个集合
-				root[y] = 0;
 			} else {
 				x = in.nextInt();
 				y = in.nextInt();
