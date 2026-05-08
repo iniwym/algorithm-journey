@@ -28,8 +28,8 @@ public class Code01_Fenwick_Tree_Optimization_java {
 	public static int[] weight = new int[MAXE];
 	public static int cntg;
 
-	public static int[] inTree = new int[MAXV];
 	public static int[] outTree = new int[MAXV];
+	public static int[] inTree = new int[MAXV];
 
 	public static void addEdge(int u, int v, int w) {
 		nxt[++cntg] = head[u];

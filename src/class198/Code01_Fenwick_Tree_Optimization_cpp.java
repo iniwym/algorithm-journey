@@ -29,8 +29,8 @@ package class198;
 //int weight[MAXE];
 //int cntg;
 //
-//int inTree[MAXV];
 //int outTree[MAXV];
+//int inTree[MAXV];
 //
 //void addEdge(int u, int v, int w) {
 //    nxt[++cntg] = head[u];
