@@ -16,7 +16,7 @@ package class155;
 //
 //using namespace std;
 //
-//const int MAXN = 50001;
+//const int MAXN = 5001;
 //const int MAXM = 200001;
 //const int MAXT = 1000001;
 //const int MAXH = 4200001;
@@ -213,7 +213,7 @@ package class155;
 //
 //int main(){
 //    ios::sync_with_stdio(false);
-//    cin.tie(NULL);
+//    cin.tie(nullptr);
 //    cin >> n >> m >> money;
 //    int u, v;
 //    double w;

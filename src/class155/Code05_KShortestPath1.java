@@ -11,15 +11,15 @@ package class155;
 // 测试链接 : https://www.luogu.com.cn/problem/P2483
 // 提交以下的code，提交时请把类名改成"Main"，可以通过所有测试用例
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.Arrays;
 
 public class Code05_KShortestPath1 {
 
-	public static int MAXN = 50001;
+	public static int MAXN = 5001;
 	public static int MAXM = 200001;
 	public static int MAXT = 1000001;
 	public static int MAXH = 4200001;
@@ -261,7 +261,7 @@ public class Code05_KShortestPath1 {
 
 	public static void main(String[] args) throws IOException {
 		FastReader in = new FastReader();
-		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out));
 		n = in.nextInt();
 		m = in.nextInt();
 		money = in.nextDouble();
@@ -281,7 +281,7 @@ public class Code05_KShortestPath1 {
 		dijkstra();
 		mergeRoad();
 		int ans = expand();
-		out.write(ans + "\n");
+		out.println(ans);
 		out.flush();
 		out.close();
 	}
