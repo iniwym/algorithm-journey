@@ -72,9 +72,9 @@ public class Code03_Cdq_Optimization_2D_java {
 				addEdge(pre, cur, 0);
 			}
 			for (int e = headp[arr[p2][0]]; e > 0; e = nextp[e]) {
-				int x = top[e];
+				int u = top[e];
 				int w = weightp[e];
-				addEdge(cur, x, w);
+				addEdge(cur, u, w);
 			}
 			pre = cur;
 		}

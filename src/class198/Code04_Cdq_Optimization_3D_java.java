@@ -98,9 +98,9 @@ public class Code04_Cdq_Optimization_3D_java {
 				add(arr[p1][3], arr[p1][0]);
 			}
 			for (int e = headp[arr[p2][0]]; e > 0; e = nextp[e]) {
-				int x = top[e];
+				int u = top[e];
 				int w = weightp[e];
-				rangeToX(arr[p2][3], x, w);
+				rangeToX(arr[p2][3], u, w);
 			}
 		}
 		for (int i = l; i <= p1; i++) {

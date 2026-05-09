@@ -112,9 +112,9 @@ package class198;
 //            add(arr[p1].c, arr[p1].i);
 //        }
 //        for (int e = headp[arr[p2].i]; e > 0; e = nextp[e]) {
-//            int x = top[e];
+//            int u = top[e];
 //            int w = weightp[e];
-//            rangeToX(arr[p2].c, x, w);
+//            rangeToX(arr[p2].c, u, w);
 //        }
 //    }
 //    for (int i = l; i <= p1; i++) {

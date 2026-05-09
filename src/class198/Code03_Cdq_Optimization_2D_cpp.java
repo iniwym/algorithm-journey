@@ -74,9 +74,9 @@ package class198;
 //            addEdge(pre, cur, 0);
 //        }
 //        for (int e = headp[arr[p2].i]; e > 0; e = nextp[e]) {
-//            int x = top[e];
+//            int u = top[e];
 //            int w = weightp[e];
-//            addEdge(cur, x, w);
+//            addEdge(cur, u, w);
 //        }
 //        pre = cur;
 //    }
