@@ -287,7 +287,7 @@ package class198;
 //    for (int i = 1; i <= n; i++) {
 //        rak[arr[i].i] = i;
 //    }
-//    int l = 0, r = arr[n].v - arr[1].v, mid, ans = -1;
+//    int l = 0, r = arr[n].v, mid, ans = -1;
 //    while (l <= r) {
 //        mid = (l + r) >> 1;
 //        if (check(mid)) {

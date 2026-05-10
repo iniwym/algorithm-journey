@@ -252,12 +252,11 @@ public class Code05_Partition_Multiset_java_3 {
 	}
 
 	public static int compute() {
-		int minv = v[1], maxv = v[1];
+		int maxv = v[1];
 		for (int i = 2; i <= n; i++) {
-			minv = Math.min(minv, v[i]);
 			maxv = Math.max(maxv, v[i]);
 		}
-		int l = 0, r = maxv - minv, mid, ans = -1;
+		int l = 0, r = maxv, mid, ans = -1;
 		while (l <= r) {
 			mid = (l + r) >> 1;
 			if (check(mid)) {

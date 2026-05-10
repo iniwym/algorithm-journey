@@ -348,7 +348,7 @@ public class Code05_Partition_Multiset_java_2 {
 		for (int i = 1; i <= n; i++) {
 			rak[arr[i][1]] = i;
 		}
-		int l = 0, r = arr[n][0] - arr[1][0], mid, ans = -1;
+		int l = 0, r = arr[n][0], mid, ans = -1;
 		while (l <= r) {
 			mid = (l + r) >> 1;
 			if (check(mid)) {
