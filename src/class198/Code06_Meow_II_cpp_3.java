@@ -162,10 +162,10 @@ package class198;
 //        int b = vi[i + 1].i;
 //        int c = vi[i + 2].i;
 //        int d = vi[i + 3].i;
-//        group[++cntp] = { a, b, x };
-//        group[++cntp] = { c, d, x };
-//        group[++cntp] = { a, c, x + v };
-//        group[++cntp] = { b, d, x + v };
+//        group[++cntp] = { a, c, x };
+//        group[++cntp] = { b, d, x };
+//        group[++cntp] = { a, b, x + v };
+//        group[++cntp] = { c, d, x + v };
 //    }
 //    buildGraph();
 //    for (int i = 1; i <= v << 1; i++) {
@@ -189,13 +189,13 @@ package class198;
 //            int d = vi[i + 3].i;
 //            if (belong[x] < belong[x + v]) {
 //                ans[a] = 0;
-//                ans[b] = 1;
-//                ans[c] = 0;
+//                ans[b] = 0;
+//                ans[c] = 1;
 //                ans[d] = 1;
 //            } else {
 //                ans[a] = 0;
-//                ans[b] = 0;
-//                ans[c] = 1;
+//                ans[b] = 1;
+//                ans[c] = 0;
 //                ans[d] = 1;
 //            }
 //        }

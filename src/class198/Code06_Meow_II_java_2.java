@@ -71,7 +71,7 @@ public class Code06_Meow_II_java_2 {
 		e = stae[stacksize];
 	}
 
-	public static void addPair(int l, int r, int x) {
+	public static void addGroup(int l, int r, int x) {
 		group[++cntp][0] = l;
 		group[cntp][1] = r;
 		group[cntp][2] = x;
@@ -270,10 +270,10 @@ public class Code06_Meow_II_java_2 {
 			int b = vi[i + 1][1];
 			int c = vi[i + 2][1];
 			int d = vi[i + 3][1];
-			addPair(a, b, x);
-			addPair(c, d, x);
-			addPair(a, c, x + v);
-			addPair(b, d, x + v);
+			addGroup(a, c, x);
+			addGroup(b, d, x);
+			addGroup(a, b, x + v);
+			addGroup(c, d, x + v);
 		}
 		buildGraph();
 		for (int i = 1; i <= v << 1; i++) {
@@ -298,13 +298,13 @@ public class Code06_Meow_II_java_2 {
 				int d = vi[i + 3][1];
 				if (belong[x] < belong[x + v]) {
 					ans[a] = 0;
-					ans[b] = 1;
-					ans[c] = 0;
+					ans[b] = 0;
+					ans[c] = 1;
 					ans[d] = 1;
 				} else {
 					ans[a] = 0;
-					ans[b] = 0;
-					ans[c] = 1;
+					ans[b] = 1;
+					ans[c] = 0;
 					ans[d] = 1;
 				}
 			}
